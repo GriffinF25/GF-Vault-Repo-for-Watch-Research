@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "/Users/griffinfletcher/Agents/.claude/projects/-Users-griffinfletcher-Agents/memory/",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash",
+      "Bash(npm *)",
+      "Bash(git *)",
+      "Bash(node *)",
+      "Bash(npx *)",
+      "Bash(ls *)",
+      "Bash(rm *)",
+      "Bash(mkdir *)",
+      "Bash(cd *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(touch *)",
+      "Bash(cp *)",
+      "Bash(mv *)"
+    ]
+  }
+}
