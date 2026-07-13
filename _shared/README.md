@@ -3,7 +3,7 @@
 **Status:** Active  
 **Purpose:** Cross-domain templates, frameworks, utilities, style guides  
 **Owner:** Griffin Fletcher  
-**Updated:** 2026-07-12
+**Updated:** 2026-07-13
 
 ## Overview
 
@@ -95,5 +95,5 @@ When to promote work to `/_shared/`:
 ---
 
 **Status:** Active  
-**Last Updated:** 2026-07-12  
+**Last Updated:** 2026-07-13  
 **Next Review:** 2026-08-12

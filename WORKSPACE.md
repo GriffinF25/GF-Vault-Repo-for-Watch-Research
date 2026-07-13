@@ -1,7 +1,6 @@
 # WORKSPACE — Principles & Workflows
 
-**Updated:** 2026-07-12  
-**See:** [CLAUDE.md](CLAUDE.md) for autonomy rules
+**Updated:** 2026-07-13 | **See:** [CLAUDE.md](CLAUDE.md) autonomy rules
 
 ## Core Principles
 

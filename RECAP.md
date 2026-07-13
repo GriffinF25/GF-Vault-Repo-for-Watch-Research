@@ -1,7 +1,6 @@
 # Monthly Recap Template
 
-**Date:** [YYYY-MM-DD]  
-**See:** [Learnings Recap System](./.claude/projects/-Users-griffinfletcher-Agents/memory/learnings-recap.md)
+**Date:** [YYYY-MM-DD] | **See:** [Learnings Recap](./.claude/projects/-Users-griffinfletcher-Agents/memory/learnings-recap.md)
 
 ## This Month's Learnings
 

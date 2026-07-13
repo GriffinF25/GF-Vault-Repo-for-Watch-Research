@@ -1,8 +1,6 @@
 # MEMORY — Auto-Memory Index & Format
 
-**System:** `/Users/griffinfletcher/Agents`  
-**Storage:** `./.claude/projects/-Users-griffinfletcher-Agents/memory/`  
-**See:** [CLAUDE.md](CLAUDE.md) for autonomy rules | [WORKSPACE.md](WORKSPACE.md) for workflows
+**Updated:** 2026-07-13 | **See:** [CLAUDE.md](CLAUDE.md) | [WORKSPACE.md](WORKSPACE.md)
 
 ## Domain Memory Indexes
 

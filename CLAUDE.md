@@ -1,8 +1,6 @@
 # Workspace Operating Instructions
 
-**Workspace:** `/Users/griffinfletcher/Agents`  
-**Owner:** Griffin Fletcher  
-**Updated:** 2026-07-12
+**Updated:** 2026-07-13 | **See:** [START_HERE.md](START_HERE.md) for quick start
 
 ## Domains
 - **GF Vault:** `/gf-vault/` — Premium watch brand  
@@ -32,14 +30,14 @@ You operate autonomously inside this workspace. You may read/create/edit/reorgan
 - Store passwords, SSNs, bank account numbers, or confidential banking docs
 - Permanently delete workspace files (use `/archive/` instead)
 
-## Quick Start
+## Key Files
 
-1. See [START_HERE.md](START_HERE.md) for immediate next steps
-2. See [INDEX.md](INDEX.md) for domain registry
-3. See [WORKSPACE.md](WORKSPACE.md) for detailed principles & workflows
-4. See [MEMORY.md](MEMORY.md) for memory system
+| File | Use |
+|------|-----|
+| [START_HERE.md](START_HERE.md) | Quick start |
+| [INDEX.md](INDEX.md) | Domain registry |
+| [WORKSPACE.md](WORKSPACE.md) | Workflows & principles |
+| [MEMORY.md](MEMORY.md) | Memory system |
+| [RECAP.md](RECAP.md) | Monthly learning checklist |
 
-## Permissions
-
-✅ All read/write/bash commands in this workspace allowed without prompting  
-See: `.claude/settings.json`
+**Permissions:** ✅ All read/write/bash allowed | See `.claude/settings.json`
