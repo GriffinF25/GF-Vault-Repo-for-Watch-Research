@@ -1,6 +1,6 @@
 # WORKSPACE — Principles & Workflows
 
-**Updated:** 2026-07-13 | **See:** [CLAUDE.md](CLAUDE.md) autonomy rules
+**Updated:** 2026-07-14 | **See:** [CLAUDE.md](CLAUDE.md) autonomy rules
 
 ## Core Principles
 
@@ -36,14 +36,7 @@
 
 ## Memory System
 
-**See:** [MEMORY.md](MEMORY.md) for complete memory documentation
-
-| Type | Purpose | Save When |
-|------|---------|-----------|
-| **user** | Role, preferences, knowledge | See [MEMORY.md](MEMORY.md#memory-types) |
-| **feedback** | How to approach work | See [MEMORY.md](MEMORY.md#memory-types) |
-| **project** | Status, goals, timelines | See [MEMORY.md](MEMORY.md#memory-types) |
-| **reference** | External systems, tools | See [MEMORY.md](MEMORY.md#memory-types) |
+**See:** [MEMORY.md](MEMORY.md) for types (user/feedback/project/reference), format, and cadence.
 
 ## When to Escalate
 

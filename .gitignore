@@ -1,0 +1,4 @@
+.DS_Store
+website/.next/
+node_modules/
+.env

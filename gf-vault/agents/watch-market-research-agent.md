@@ -4,7 +4,7 @@ description: Weekly scheduled research agent tracking wholesale/below-market wat
 metadata:
   type: reference
   agent_type: scheduled
-  schedule: Weekly (Monday 8am)
+  schedule: Weekly (Monday 14:00 UTC / 9am CT)
   created: 2026-07-13
 ---
 
@@ -12,7 +12,7 @@ metadata:
 
 **Purpose:** Weekly market scan for wholesale/below-market watch opportunities, liquidity shifts, and deal windows across target models.
 
-**Schedule:** Every Monday at 8:00 AM UTC  
+**Schedule:** Cloud routine "GF Vault Weekly Watch Market Research" — every Monday 14:00 UTC (9am CT). Runs against the GitHub repo (`GriffinF25/GF-Vault-Repo-for-Watch-Research`), commits the report, and emails a summary to griff.fletcher@gmail.com via Gmail. Manage at https://claude.ai/code/routines  
 **Output:** Markdown report saved to `/gf-vault/reports/weekly-market-research-[YYYY-MM-DD].md`  
 **Status:** Active
 
@@ -214,15 +214,13 @@ metadata:
 
 ## Scheduled Execution
 
-- **Trigger:** Every Monday at 8:00 AM UTC
-- **Execution time:** ~15–20 minutes (depends on data availability)
-- **Output location:** `/gf-vault/reports/weekly-market-research-[date].md`
-- **Notification:** Report link posted to GF Vault memory index
-- **Failure handling:** If execution fails, manual run available via CLI
+- **Trigger:** Every Monday 14:00 UTC (9am CT) via cloud routine
+- **Output:** `/gf-vault/reports/weekly-market-research-[date].md` committed to the repo + email summary to Griffin
+- **Failure handling:** If a run fails, trigger manually from https://claude.ai/code/routines or run the research locally from this spec
 
 **Agent Instructions:**
-Perform this research systematically, one brand at a time. Prioritize completed sales over speculation. Focus on identifying deals that are 15%+ below baseline or showing strong margin potential. Update the weekly report template above. Save the final report and notify Griffin when complete.
+Perform this research systematically, one brand at a time. Prioritize completed sales over speculation. Focus on identifying deals that are 15%+ below baseline or showing strong margin potential. Fill the weekly report template above, save the report, commit and push, then email the summary.
 
 ---
 
-**Last Updated:** 2026-07-13 | **Status:** Ready to schedule
+**Last Updated:** 2026-07-14 | **Status:** Scheduled & active

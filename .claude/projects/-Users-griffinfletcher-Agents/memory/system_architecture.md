@@ -1,82 +1,26 @@
 ---
 name: agents_system_architecture
-description: "Multi-domain agent organization system for watch company, banking career, personal projects, and business ventures"
+description: "Griffin's multi-domain agent workspace at /Users/griffinfletcher/Agents — structure, autonomy grant, and use pattern"
 metadata: 
   node_type: memory
   type: project
-  originSessionId: fe8deb2e-e91c-4ade-a848-fdb6d8872d1f
+  originSessionId: 49701677-239f-4ab8-9a84-fc5c302bf2d2
 ---
 
-## System Architecture for Agents
+## Agents Workspace Architecture
 
-Created 2026-07-12 as professional, enterprise-grade agent organization system for Griffin Fletcher.
+**Workspace:** `/Users/griffinfletcher/Agents` (local git repo; origin = github.com/GriffinF25/GF-Vault-Repo-for-Watch-Research, which the weekly cloud routine reads — keep it pushed).
 
-**Problem addressed:** One person managing multiple business domains (watch company, banking career, personal growth, business ventures) needed a scalable, professional structure that keeps domains independent while allowing shared resources and frameworks.
+One person (Griffin) runs multiple ventures through domain folders, each independent with its own `CLAUDE.md`, `README.md`, `/memory/`, `/agents/`, `/projects/`, `/docs/`, `/resources/`, `/archive/`:
 
-**Solution:** Multi-domain agent system with modular independence, shared resources, and clear handoff documentation.
+- `/gf-vault/` — watch trading (Active; two agents: Watch Pricing Genius on-demand, Watch Market Research cloud routine Mondays 14:00 UTC)
+- `/fletcher-holdings/` — real estate (Planning)
+- `/banking-career/` — finance career (Active)
+- `/personal/` — life goals (Active)
+- `/_shared/` — hybrid shared resources: core templates in `_shared/`, domain-specific extensions per domain (chosen to avoid duplication without over-engineering)
 
-### Structure
+Root docs: `CLAUDE.md` (rules + autonomy grant), `INDEX.md` (registry/quick start), `WORKSPACE.md` (workflows), `MEMORY.md` (memory format), `RECAP.md` (monthly checklist). Superseded root docs (AGENTS.md, SYSTEM.md, START_HERE.md, BUSINESS-REFERENCE.md) live in `/Archive/`. A `/website/` dir exists outside the domain structure (Next.js; build artifacts gitignored).
 
-```
-/Agents/
-├── SYSTEM.md                 # Meta-instructions & principles
-├── INDEX.md                  # Master registry of all domains
-├── MEMORY.md                 # Quick index to domain memories
-├── /watch-company/           # Domain 1: Watch brand development
-├── /banking-career/          # Domain 2: Finance career advancement
-├── /personal/                # Domain 3: Life goals & learning
-├── /business-ventures/       # Domain 4: New business evaluation
-└── /_shared/                 # Core templates & frameworks (hybrid model)
-```
+**Autonomy:** Root CLAUDE.md grants full autonomy inside the workspace — read/write/organize/run commands without approval; don't modify files outside it, don't store credentials/SSNs/bank docs, archive instead of delete.
 
-Each domain folder contains:
-- `CLAUDE.md` — Domain-specific instructions and workflows
-- `README.md` — Quick overview
-- `/agents/` — Agent definitions
-- `/memory/` — Persistent context
-- `/docs/` — Reference materials
-- `/resources/` — Templates and assets
-- `/projects/` — Active work
-
-### Key Principles
-
-1. **Modular Independence** — Each domain operates autonomously
-2. **Enterprise Structure** — Professional organization, lightweight execution
-3. **Hybrid Shared Resources** — Core frameworks in `/_shared/`, domain-specific extensions in each domain
-4. **Clear Handoffs** — Explicit documentation when domains intersect
-5. **Persistent Memory** — Each domain maintains its own memory system
-
-### Why Hybrid Approach Works
-
-User chose **hybrid** for shared resources (core templates in `_shared/`, domain-specific extensions per domain) because:
-- Avoids duplication across domains
-- Allows each domain to adapt frameworks to its needs
-- Creates a reusable library as patterns emerge
-- Prevents over-engineering while maintaining structure
-
-### Use Pattern
-
-1. **Identify domain** of work
-2. **Read that domain's CLAUDE.md** for context
-3. **Check domain memory** for prior decisions
-4. **Execute using domain-specific tools**
-5. **Log outcomes** to domain memory
-
-### Memory System
-
-Each domain has persistent memory at `/[domain]/memory/` storing:
-- Strategic decisions and rationale
-- Learnings and insights
-- Relevant data and research
-- Relationships and contacts
-- Progress on long-term goals
-
-**Cross-domain:** When work affects multiple domains, document in both domain memories using `[[domain-name-topic]]` links.
-
-### For Claude Code Going Forward
-
-1. Always check `INDEX.md` to understand which domain a task belongs to
-2. Read the domain's `CLAUDE.md` before starting work
-3. Check domain memory for context
-4. Respect domain independence — don't pull in unrelated domains
-5. Update memory when significant work completes
+**Use pattern:** identify domain via INDEX.md → read domain CLAUDE.md + memory/MEMORY.md → execute autonomously → record decisions in domain memory with `[[domain-topic]]` cross-links. Related: [[learnings-recap]].

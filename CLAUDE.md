@@ -1,6 +1,6 @@
 # Workspace Operating Instructions
 
-**Updated:** 2026-07-13 | **See:** [START_HERE.md](START_HERE.md) for quick start
+**Updated:** 2026-07-14 | **Quick start:** [INDEX.md](INDEX.md)
 
 ## Domains
 - **GF Vault:** `/gf-vault/` — Premium watch brand  
@@ -34,8 +34,7 @@ You operate autonomously inside this workspace. You may read/create/edit/reorgan
 
 | File | Use |
 |------|-----|
-| [START_HERE.md](START_HERE.md) | Quick start |
-| [INDEX.md](INDEX.md) | Domain registry |
+| [INDEX.md](INDEX.md) | Domain registry & quick start |
 | [WORKSPACE.md](WORKSPACE.md) | Workflows & principles |
 | [MEMORY.md](MEMORY.md) | Memory system |
 | [RECAP.md](RECAP.md) | Monthly learning checklist |

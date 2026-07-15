@@ -11,7 +11,7 @@
 
 [1-2 sentence summary of what this domain does and what agents operate here]
 
-**See also:** `../../INDEX.md` (master system overview), `../../SYSTEM.md` (system principles)
+**See also:** `../../INDEX.md` (domain registry), `../../WORKSPACE.md` (principles & workflows)
 
 ---
 

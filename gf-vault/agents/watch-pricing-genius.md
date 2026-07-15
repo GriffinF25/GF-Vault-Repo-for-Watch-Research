@@ -15,13 +15,11 @@ metadata:
 
 ## How to Invoke
 
-```bash
-# From Claude Code CLI or web
-# Use @watch-pricing-genius or spawn Watch Pricing Genius agent
+Ask: *"Analyze this watch with the Watch Pricing Genius framework"* and provide: reference & model, size, dial/bezel, bracelet/strap, condition (Excellent/Very Good/Good/Fair), set status (box/papers/warranty/links), service history, asking price, photos/listing link, known issues. Better data = better analysis; missing fields are requested only if they materially change valuation.
 
-# Or via direct instruction:
-"Analyze this watch opportunity with the Watch Pricing Genius framework"
-```
+Request deep analysis (more searches, higher confidence) when: rare reference, $5,000+, uncertain identification, conflicting evidence, or authenticity concerns.
+
+After a completed buy **and** sell, record it in [`pricing-transactions.md`](../memory/pricing-transactions.md) using the format there — actual results are the highest-weight evidence for future analyses. Example output: [`test-analysis-grand-seiko-spring-drive.md`](../projects/test-analysis-grand-seiko-spring-drive.md).
 
 ## Core Capabilities
 

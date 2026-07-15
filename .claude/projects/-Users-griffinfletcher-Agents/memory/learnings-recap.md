@@ -71,4 +71,19 @@ Every 3 months:
 - All domains reference root docs instead of copying
 - Memory indexes point to actual memories instead of repeating
 
-**Status:** Active | Review: Monthly
+**2026-07-13 — System Finalization**
+- Deleted SYSTEM-RULES.md (violated no-bloat rule)
+- Compressed all root files to 13.8K (was 18.4K)
+- Added learning recap system with monthly template
+- Updated all dates & committed to git
+- System is production-ready for agents/tasks
+- Learnings: Clarity > absolute minimum size (kept readable)
+
+**2026-07-14 — Continuity & Condensation Audit**
+- Found the weekly cloud routine had fired against a near-empty GitHub repo (workspace was never pushed), had no WebSearch/WebFetch, and had Robinhood attached instead of Gmail — fixed routine + synced repo
+- Lesson: a scheduled cloud agent's repo, tools, and connectors must be verified end-to-end at creation, not assumed from the spec doc
+- Archived duplicative docs (setup summaries, QUICK-START, START_HERE, BUSINESS-REFERENCE); rewrote _shared/README to list only files that exist
+- Consolidated 3 overlapping session memories into system_architecture.md
+- Docs must state schedule facts once, accurately (was "Mon 8am UTC" in docs vs. actual Mon 14:00 UTC)
+
+**Status:** Active | Review: Monthly | Next: Verify first valid weekly run (Mon 2026-07-20)

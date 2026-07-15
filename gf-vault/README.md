@@ -1,63 +1,30 @@
 # GF Vault
 
-**Status:** Active  
-**Focus:** Premium watch brand development, operations, marketing  
-**Owner:** Griffin Fletcher
+**Status:** Active | **Focus:** Premium watch secondary-market trading | **Owner:** Griffin Fletcher
 
-## Quick Overview
+Acquires premium watches at wholesale/below-market prices and resells for profit — systematic, data-driven, capital-protective. Strategy and workflows: [CLAUDE.md](CLAUDE.md).
 
-GF Vault is a premium watch brand developing [PRODUCTS/POSITIONING].
+## Agents
 
-**Current Phase:** [INSERT CURRENT PHASE]  
-**Key Metrics:** [INSERT METRICS]  
-**Team:** [INSERT TEAM INFO]
+- **Watch Pricing Genius** ([agents/watch-pricing-genius.md](agents/watch-pricing-genius.md)) — On-demand deal analysis: identification, comparables, resale values, purchase tiers, buy/pass verdict with confidence score.
+- **Watch Market Research** ([agents/watch-market-research-agent.md](agents/watch-market-research-agent.md)) — Cloud routine, Mondays 9am CT (14:00 UTC). Scans Rolex/Tudor/Omega/Breitling/TAG/Cartier/Panerai/Grand Seiko for below-market opportunities; saves report to `/reports/` and emails a summary.
 
-## Key Files
+## File Map
 
-- `CLAUDE.md` — Domain strategy and instructions
-- `/agents/watch-pricing-genius.md` — Watch pricing analysis agent specification
-- `/projects/` — Active development and marketing work
-- `/memory/` — Strategic decisions, learnings, watch pricing knowledge
-- `/resources/` — Brand assets, templates, guidelines
-- `/docs/` — Operational documentation (marketplace fees, etc.)
+| Path | Purpose |
+|------|---------|
+| [memory/MEMORY.md](memory/MEMORY.md) | Memory index (pricing knowledge, transactions, cached research) |
+| [docs/marketplace-fees.md](docs/marketplace-fees.md) | eBay/Chrono24/auction fees; update quarterly |
+| `/projects/` | Completed analyses (incl. Grand Seiko test analysis) |
+| `/reports/` | Weekly market research reports |
+| `/archive/` | Superseded docs |
 
-## Watch Pricing Genius Agent
+## Current Status
 
-A specialized agent for analyzing watch acquisitions, pricing negotiations, and resale valuations.
-
-**Purpose:** Protect capital and identify watches that can realistically be resold for net profit.
-
-**Use it for:**
-- Evaluating a watch before purchase (pricing, condition assessment, profit potential)
-- Researching comparable sales across marketplaces
-- Calculating expected net proceeds and ROI
-- Developing negotiation strategy
-- Recording completed transactions and learnings
-
-**How to invoke:**
-```
-Claude, help me analyze this watch opportunity using the Watch Pricing Genius framework
-```
-
-Or reference it directly:
-- See `/agents/watch-pricing-genius.md` for full documentation
-- Memory files: `/memory/watch-pricing-knowledge.md`, `/memory/pricing-transactions.md`, `/memory/comparable-research.md`
-- Reference: `/docs/marketplace-fees.md` for current fees and business assumptions
-
-## Recent Work
-
-[INSERT RECENT ACCOMPLISHMENTS]
-
-## Next Steps
-
-1. [INSERT PRIORITY 1]
-2. [INSERT PRIORITY 2]
-3. [INSERT PRIORITY 3]
-
-## Useful Contacts
-
-- [INSERT CONTACTS]
+- ✓ Both agents specified; memory system initialized; test analysis done
+- ✓ Weekly research routine scheduled (first valid run: Mon 2026-07-20 — the 2026-07-13 run fired before the repo was synced)
+- Next: review first real weekly report → run first deal end-to-end → record transaction in memory
 
 ---
 
-**Last Updated:** 2026-07-13
+**Last Updated:** 2026-07-14 | **Review:** 2026-08-13
