@@ -4,6 +4,7 @@
 
 ## What Exists Today
 
+- [frameworks/agent-patterns.md](frameworks/agent-patterns.md) — Agent tree (orchestrator → specialists → workers) & verification-loop doctrine; tree agents live in `.claude/agents/`
 - [templates/CLAUDE-template.md](templates/CLAUDE-template.md) — Starting point for a new domain's CLAUDE.md
 - [memory/shared-patterns.md](memory/shared-patterns.md) — Cross-domain patterns as they emerge
 

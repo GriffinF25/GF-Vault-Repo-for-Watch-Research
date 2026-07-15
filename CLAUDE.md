@@ -36,6 +36,7 @@ You operate autonomously inside this workspace. You may read/create/edit/reorgan
 |------|-----|
 | [INDEX.md](INDEX.md) | Domain registry & quick start |
 | [WORKSPACE.md](WORKSPACE.md) | Workflows & principles |
+| [agent-patterns](_shared/frameworks/agent-patterns.md) | Agent tree & verification loops |
 | [MEMORY.md](MEMORY.md) | Memory system |
 | [RECAP.md](RECAP.md) | Monthly learning checklist |
 

@@ -5,6 +5,8 @@
 ## Core Principles
 
 **Modular Independence** → Each domain: [CLAUDE.md](CLAUDE.md), memory, projects, resources  
+**Agent Tree** → Orchestrator (top model) delegates narrow tasks to cheapest capable agents in `.claude/agents/`; reports flow up — see [agent-patterns](_shared/frameworks/agent-patterns.md)  
+**Verification Loops** → Any task with an objective comparator (screenshot, tests, comps) loops produce→measure→fix until it converges — see [agent-patterns](_shared/frameworks/agent-patterns.md)  
 **Strategic Memory** → See [MEMORY.md](MEMORY.md) for types & format  
 **Shared Resources** → Templates in `/_shared/` adapted per domain  
 **Cross-Domain Links** → Use `[[domain-topic]]` syntax ([see MEMORY.md](MEMORY.md#memory-file-format))  
