@@ -51,7 +51,7 @@ Otherwise: [CLAUDE.md](CLAUDE.md) authorizes autonomous decisions.
 
 ## Learning & Review Cadence
 
-**Weekly:** Note learnings as they emerge → add directly to relevant domain memory/files  
+**Weekly:** Note learnings as they emerge → add directly to relevant domain memory/files. AI Practice Scout routine harvests external techniques → [upgrade-candidates](_shared/memory/upgrade-candidates.md) → test → promote (skill/agent/rule) or reject, log the decision  
 **Monthly:** Run [learnings recap](file:./.claude/projects/-Users-griffinfletcher-Agents/memory/learnings-recap.md) checklist  
 **Quarterly:** Consolidate patterns → move to `/_shared/` → refactor memories  
 

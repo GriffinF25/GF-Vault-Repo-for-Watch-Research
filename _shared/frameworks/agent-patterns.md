@@ -9,7 +9,7 @@ The main session (highest-capability model, e.g. Fable/Opus) is the **orchestrat
 | Tier | Agents | Model | Use for |
 |------|--------|-------|---------|
 | 0 — Orchestrator | main session | highest available | Planning, judgment, synthesis, decisions |
-| 1 — Specialists | `analyst`, `builder`, `site-cloner` | sonnet | Bounded multi-step tasks: research reports, implementing changes, site replication |
+| 1 — Specialists | `analyst`, `builder`, `site-cloner`, `critic` | sonnet | Bounded multi-step tasks: research reports, implementing changes, site replication, independent verification |
 | 2 — Workers | `scout` | haiku | Single lookups, file/web fact-finding, parallel fan-out |
 
 **Model heuristic:** the more judgment, ambiguity, or synthesis a task needs, the higher the model; the more mechanical or narrow, the lower. Launch several scouts in parallel rather than one broad task.
@@ -29,6 +29,8 @@ produce → measure → diff vs. target → fix the biggest gap → repeat
 ```
 
 **Stop when:** target threshold met, OR two consecutive passes show no improvement (plateau), OR iteration cap hit (default 5). Then report the remaining gap honestly — never claim convergence that didn't happen.
+
+For high-stakes work, close the loop with an independent gate: a `critic` agent verifies the done-criteria itself (producer self-verification has self-grading bias).
 
 **Log every pass** (what changed, gap remaining) so progress is auditable and the next session can resume.
 
