@@ -86,4 +86,10 @@ Every 3 months:
 - Consolidated 3 overlapping session memories into system_architecture.md
 - Docs must state schedule facts once, accurately (was "Mon 8am UTC" in docs vs. actual Mon 14:00 UTC)
 
-**Status:** Active | Review: Monthly | Next: Verify first valid weekly run (Mon 2026-07-20)
+**2026-07-14 — First live routine run (honest failure)**
+- Cloud environment blockers found: (1) egress policy denied all external HTTPS (WebFetch/curl 403 everywhere; only snippet-level WebSearch worked), (2) GitHub App integration was read-only ("Resource not accessible by integration") so the report couldn't be pushed. Both are claude.ai/GitHub account settings only Griffin can change.
+- Gmail connector delivers as **drafts**, not sent mail — check `in:draft` when verifying routine output.
+- Win: the agent refused to fabricate verified comps from snippets and emailed an honest no-data report — the no-fabrication doctrine held under pressure.
+- Checklist for any new cloud routine: repo pushed & readable → egress open → GitHub write → connector attached → expect drafts.
+
+**Status:** Active | Review: Monthly | Next: Verify weekly run after Griffin enables egress + GitHub write

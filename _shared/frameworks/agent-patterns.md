@@ -16,9 +16,10 @@ The main session (highest-capability model, e.g. Fable/Opus) is the **orchestrat
 
 **Delegation rules:**
 1. Every delegation states: objective, exact inputs (paths/URLs), done-criteria, and required report format.
-2. Keep the tree shallow: orchestrator → specialist → (optionally) workers. No deeper.
-3. Reports flow **up**, always in this shape: **Result** (the answer/deliverable), **Evidence** (paths, sources, data), **Confidence** (high/med/low + why), **Open issues**. The orchestrator integrates — it never forwards raw dumps.
-4. **Domain specs define the *what*; tree agents are the *who*.** GF Vault's watch-pricing-genius.md is a spec, not an executor — the orchestrator hands it to an `analyst` ("run a pricing analysis per gf-vault/agents/watch-pricing-genius.md for watch X"). New business = new specs, same tree.
+2. **Context discipline:** orchestrator context is the scarcest resource. Delegate reading-heavy work (long files, big search sweeps, web dumps) down the tree so only conclusions come back up. Every line in a CLAUDE.md/spec competes for the model's attention — cut any line that doesn't change behavior.
+3. Keep the tree shallow: orchestrator → specialist → (optionally) workers. No deeper. Parallel builders touching the same repo each get `isolation: "worktree"` so they never collide.
+4. Reports flow **up**, always in this shape: **Result** (the answer/deliverable), **Evidence** (paths, sources, data), **Confidence** (high/med/low + why), **Open issues**. The orchestrator integrates — it never forwards raw dumps.
+5. **Domain specs define the *what*; tree agents are the *who*.** GF Vault's watch-pricing-genius.md is a spec, not an executor — the orchestrator hands it to an `analyst` ("run a pricing analysis per gf-vault/agents/watch-pricing-genius.md for watch X"). New business = new specs, same tree.
 
 ## Pattern 2 — Verification Loops
 
@@ -41,7 +42,9 @@ Workspace comparators available today: `visual-verify` skill (screenshot vs. des
 - **Add capability:** drop one file in `.claude/agents/` (frontmatter: `name`, `description`, `tools`, `model`; body = its instructions). It's immediately delegatable.
 - **Remove capability:** move the file to `/Archive/`.
 - **New business:** write domain specs in `[domain]/agents/` — no new tree agents needed unless the *kind* of work is new.
+- **Right tool for repetition:** a recurring *workflow* becomes a skill/slash command; a deterministic *trigger* ("always X after Y") becomes a hook in settings.json; only a new *kind of judgment* becomes an agent.
 - Keep each agent single-purpose; if a definition grows beyond ~60 lines, it's doing too much — split or simplify.
+- **Specs are assets:** a proven spec + agent config is a reusable, portable product — the same pricing-analysis or research pipeline can be re-skinned for a new domain (or sold as a service) in one file. Write specs generic-first, domain details as parameters.
 
 ---
 
