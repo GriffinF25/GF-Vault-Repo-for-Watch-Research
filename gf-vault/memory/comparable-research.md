@@ -205,6 +205,22 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
 
 ---
 
+## Research Process Log
+
+### 2026-07-15 and 2026-07-20 — Weekly research blocked, no comps collected
+- Both scheduled runs of [[watch-market-research-agent]] hit a session-level network egress
+  policy that denies all outbound HTTPS to external sites (eBay, Chrono24, Reddit, WatchUSeek,
+  and even non-watch control sites) — confirmed via the agent proxy status endpoint as a
+  policy-level denial, not a per-site issue. Only Anthropic-hosted `WebSearch` (snippet/aggregator
+  results, not verifiable sold prices) still works, and per the no-fabrication rule its output was
+  excluded from comps.
+- No baselines or comparables were updated either week. See
+  `gf-vault/reports/weekly-market-research-2026-07-20.md` for full detail.
+- **Action needed:** environment egress policy must be opened for this agent to function; not a
+  research-methodology issue.
+
+---
+
 ## Source Quality Notes
 
 **Highest Confidence Sources:**
