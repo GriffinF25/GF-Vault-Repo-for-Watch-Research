@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "GF Vault Price Check",
+    "slug": "gf-vault-price-check",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gfvault.pricecheck"
+    },
+    "android": {
+      "package": "com.gfvault.pricecheck",
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0e14",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "GF Vault uses your photos to let you attach watch images to a sell-to-us submission."
+        }
+      ]
+    ]
+  }
+}

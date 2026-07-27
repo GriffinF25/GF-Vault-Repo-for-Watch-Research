@@ -12,6 +12,10 @@
 - **[Pricing Transactions](pricing-transactions.md)** — Actual buys/sales with costs, margins, learnings
 - **[Comparable Research](comparable-research.md)** — Cached research, verified sources, market observations
 
+## Consumer App
+
+- **[Watch Price Checker App](watch-price-app.md)** — Active build; consumer mobile app productizing the pricing genius methodology, lead-gen + freemium/premium
+
 ## Supporting Documents
 
 - **[Marketplace Fees](../docs/marketplace-fees.md)** — eBay, Chrono24, auction house fees; business assumptions
