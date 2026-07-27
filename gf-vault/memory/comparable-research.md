@@ -219,6 +219,16 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
 - **Action needed:** environment egress policy must be opened for this agent to function; not a
   research-methodology issue.
 
+### 2026-07-27 — Weekly research blocked again, third consecutive week
+- Same blanket egress denial as the prior two weeks: direct HTTPS (curl, WebFetch) returned
+  403/`CONNECT tunnel failed` on eBay, Chrono24, Reddit, and a Wikipedia control site. Only
+  Anthropic-hosted `WebSearch` worked, returning aggregator/asking-price snippets (WatchCharts,
+  dealer listing pages) that are excluded from comps per the no-fabrication rule.
+- No baselines or comparables updated this week either — see
+  `gf-vault/reports/weekly-market-research-2026-07-27.md` for full detail.
+- **Escalation:** three consecutive scheduled runs (07-15, 07-20, 07-27) have produced zero
+  verified data. This is now the routine's top blocker; existing baselines are 15+ days stale.
+
 ---
 
 ## Source Quality Notes
