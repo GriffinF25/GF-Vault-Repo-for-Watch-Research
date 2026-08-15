@@ -6,6 +6,15 @@
 
 import Anthropic from "npm:@anthropic-ai/sdk@^0.71.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.45.0";
+import {
+  SOURCE_HIERARCHY,
+  CONFIDENCE_RUBRIC,
+  NO_FABRICATION_RULES,
+  normalizeReference,
+  lookupBaseline,
+  formatBaselineContext,
+  type ReferenceBaseline,
+} from "../_shared/pricing-methodology.ts";
 
 const CACHE_TTL_HOURS = 24;
 const FREE_TIER_MONTHLY_LOOKUPS = 3;
@@ -81,21 +90,13 @@ When the user provides year, condition, set completeness, or notes, weigh them d
 - Explicit notes (aftermarket parts, damage, service due) should pull the estimate down and be
   called out in the notes of the closest matching comp or reflected in a wider/lower range.
 
-Data source hierarchy (highest weight first):
-1. Verified completed/sold listings with a visible price (eBay sold, Chrono24 sold, auction results)
-2. Reputable auction house results
-3. r/Watchexchange and similar community marketplaces (real peer-to-peer sales, but self-reported —
-   weight below verified marketplace sold listings)
-4. Watch market index/tracking services
-5. Dealer asking prices
-6. Active listings on Chrono24 or eBay, or general Reddit discussion of prices (lowest weight —
-   asking prices or anecdotal, not confirmed sales)
+${SOURCE_HIERARCHY}
 
 Rules:
-- Never present an asking price as a sold price. Label each comp's status as "sold" or "active".
+- ${NO_FABRICATION_RULES}
 - Prefer sales from the last 90 days; widen the window only for rare/slow-moving references and say so in a comp's notes.
 - price_low and price_high should bracket the realistic resold value range for the given condition, not the optimistic retail asking price.
-- confidence: "high" only with 3+ recent exact-match sold comps; "medium-high" with good but imperfect matches; "medium" with adequate but mixed evidence; "low" with sparse or conflicting evidence. Never claim high confidence without the evidence to back it.
+- ${CONFIDENCE_RUBRIC}
 - liquidity_rating reflects how quickly this reference typically sells based on what you find.
 - Include 3-6 of the strongest comps, most recent first. Include real source names and dates — never fabricate a source, price, or date.
 - Every comp needs listing_url and image_url keys. Set listing_url to the URL of that specific listing/post if you have one, else "". Set image_url to a direct image URL ONLY if you are confident it belongs to that exact listing (e.g. an eBay/Chrono24/Reddit-hosted photo you actually saw in search results) — never guess, construct, or repurpose an image from a different listing. Leave "" when unsure; a missing photo is fine, a wrong one is not.
@@ -111,14 +112,6 @@ interface CheckPriceRequest {
   year?: string;
   notes?: string;
   forceRefresh?: boolean;
-}
-
-function normalizeReference(req: CheckPriceRequest): string {
-  return `${req.brand}-${req.model}-${req.reference}`
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
 }
 
 // Cache bucket now spans every factor that changes the answer — condition,
@@ -172,7 +165,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const normalizedReference = normalizeReference(body);
+    const normalizedReference = normalizeReference(body.brand, body.model, body.reference);
     const bucket = conditionBucket(body);
 
     if (!body.forceRefresh) {
@@ -191,7 +184,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    const estimate = await fetchEstimateFromClaude(body);
+    const baseline = await lookupBaseline(adminClient, normalizedReference);
+    const estimate = await fetchEstimateFromClaude(body, baseline);
 
     const { data: upserted, error: upsertError } = await adminClient
       .from("price_estimates")
@@ -276,7 +270,7 @@ async function checkAndIncrementUsage(
   return { allowed: true, lookupsThisPeriod: lookupsThisPeriod + 1 };
 }
 
-async function fetchEstimateFromClaude(req: CheckPriceRequest) {
+async function fetchEstimateFromClaude(req: CheckPriceRequest, baseline: ReferenceBaseline | null) {
   const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY") });
 
   const userQuery = [
@@ -287,6 +281,7 @@ async function fetchEstimateFromClaude(req: CheckPriceRequest) {
     req.condition ? `Condition: ${req.condition}` : null,
     req.setCompleteness ? `Set completeness: ${req.setCompleteness}` : null,
     req.notes ? `Other factors noted by the user: ${req.notes}` : null,
+    formatBaselineContext(baseline) || null,
   ]
     .filter(Boolean)
     .join("\n");

@@ -111,3 +111,32 @@ same web search and structured-output support, higher per-token price.
   a stable `user_id` for usage limits and lead attribution.
 - **Sell-to-us leads:** written directly from the app to the `leads` table under RLS (insert +
   read own rows only); no separate backend function needed for that path.
+- **Shared pricing methodology:** `supabase/functions/_shared/pricing-methodology.ts` holds the
+  source-hierarchy/confidence-rubric/acquisition-tier rules and the `reference_baselines` lookup
+  helpers, imported by both `check-price` and `analyze-watch` (below) so the two never drift from
+  each other or from `gf-vault/agents/watch-pricing-genius.md`, which points to this same file.
+  `reference_baselines` (schema: `supabase/migrations/0002_reference_baselines.sql`, seeded from
+  `gf-vault/memory/watch-pricing-knowledge.md` in `0003_seed_reference_baselines.sql`) grounds
+  both functions' estimates in GF Vault's own accumulated pricing data before/alongside a fresh
+  web search, instead of answering from zero context every time.
+
+## Internal tool: Watch Analyzer (`analyze-watch`)
+
+A second Edge Function, separate from the consumer price-checker above — Griffin's internal
+photo-based purchase-decision tool, implementing `gf-vault/agents/watch-pricing-genius.md`'s
+methodology machine-callably. Send it photos and/or a description (optionally brand/model/
+reference, which grounds it in `reference_baselines` the same way `check-price` does) and it
+returns a full markdown report: identification, market snapshot, comparables, valuation, deal
+math, and a Steal/Great Buy/Good Buy/Borderline/Pass recommendation. Uses `claude-opus-4-8`
+(deeper research, low volume — real purchase decisions, not consumer traffic).
+
+It serves its own page (`GET`) and runs the analysis (`POST`) from the same function, so it's one
+permanent Supabase URL with no separate frontend deploy. Deployed `--no-verify-jwt` — **Griffin-only
+by design, no auth on the endpoint, don't link it publicly:**
+
+```bash
+cd supabase
+npx supabase functions deploy analyze-watch --no-verify-jwt
+```
+
+Find the URL in the Supabase dashboard's Edge Functions list after deploying.

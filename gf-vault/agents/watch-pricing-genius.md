@@ -54,13 +54,10 @@ After a completed buy **and** sell, record it in [`pricing-transactions.md`](../
 
 ### 5. Acquisition Ratings
 
-| Rating | Criteria |
-|--------|----------|
-| **Steal** | Excellent downside protection, strong liquidity, unusually favorable profit, wide margin for error |
-| **Great Buy** | Clearly exceeds profit target (~$500), acceptable risk, good liquidity |
-| **Good Buy** | Meets minimum profit target (~$300), reasonable confidence |
-| **Borderline** | Profit depends on optimistic scenarios, slow liquidity, higher risk |
-| **Pass** | Insufficient profit, weak evidence, authenticity concerns, poor liquidity |
+Canonical tier table lives in `ACQUISITION_TIERS` in
+`gf-vault/projects/watch-price-app/supabase/functions/_shared/pricing-methodology.ts` — read it
+before rating a deal. Shared with the `analyze-watch` Edge Function so this agent and Griffin's
+in-app photo-based buy/pass tool always apply the same tiers.
 
 ### 6. Liquidity Assessment
 - Very liquid: Multiple recent sales, strong demand
@@ -70,10 +67,10 @@ After a completed buy **and** sell, record it in [`pricing-transactions.md`](../
 - Very slow: Highly specialized or unpopular references
 
 ### 7. Confidence Scoring
-- **High (85-100%):** Clear identification, multiple exact comparables, recent sales, consistent pricing
-- **Medium-high (70-84%):** Good evidence, mostly exact matches, recent enough
-- **Medium (55-69%):** Adequate evidence, some variation matches, pricing varies
-- **Low (<55%):** Limited comparables, uncertain identification, conflicting evidence
+
+Canonical rubric lives in `CONFIDENCE_RUBRIC` in
+`gf-vault/projects/watch-price-app/supabase/functions/_shared/pricing-methodology.ts` — same
+rubric `check-price` and `analyze-watch` apply. Read it before scoring an analysis.
 
 ### 8. Negotiation Assistance
 - Polite, non-aggressive opening offer messaging
@@ -96,24 +93,13 @@ After a completed buy **and** sell, record it in [`pricing-transactions.md`](../
 
 ## Data Sources & Hierarchy
 
-**Priority order (highest weight first):**
-
-1. GF Vault's confirmed completed transactions
-2. Verified completed sales with visible actual prices
-3. Marketplace research tools (accepted offer prices)
-4. Reputable auction results
-5. Credible public completed sales
-6. Reliable watch-market indexes
-7. Dealer asking prices
-8. Chrono24 active listings
-9. eBay active listings
-10. Forum and social-media asking prices
-
-**Never:**
-- Present asking price as actual sold price
-- Fabricate a source, URL, specification, or service record
-- Claim high confidence without adequate evidence
-- Invent precision not supported by evidence
+Canonical text lives in code, not here — see
+`gf-vault/projects/watch-price-app/supabase/functions/_shared/pricing-methodology.ts`
+(exports `SOURCE_HIERARCHY` and `NO_FABRICATION_RULES`). Read that file before running an
+analysis. It is the single source of truth shared by this agent, the consumer app's `check-price`
+Edge Function, and the internal `analyze-watch` Edge Function — which is this spec's
+machine-callable implementation for photo-based purchase decisions (Opus-based, deployed
+`--no-verify-jwt`, Griffin-only; see `gf-vault/projects/watch-price-app/README.md`).
 
 ## Integration with GF Vault Memory
 

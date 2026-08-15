@@ -10,6 +10,15 @@
 // because this backs real purchase decisions and runs at much lower volume.
 
 import Anthropic from "npm:@anthropic-ai/sdk@^0.71.0";
+import { createClient } from "npm:@supabase/supabase-js@^2.45.0";
+import {
+  SOURCE_HIERARCHY,
+  NO_FABRICATION_RULES,
+  ACQUISITION_TIERS,
+  normalizeReference,
+  lookupBaseline,
+  formatBaselineContext,
+} from "../_shared/pricing-methodology.ts";
 
 const MODEL = "claude-opus-4-8";
 const MAX_OUTPUT_TOKENS = 4096;
@@ -26,15 +35,9 @@ Griffin will send photos and/or a text description of a specific watch he's cons
 
 Run a fresh live web search every time — never answer from memory or training data alone. State the date you searched so he knows how current this is.
 
-Research hierarchy (highest trust first):
-1. Verified completed/sold listings with a visible price (eBay sold, Chrono24 sold, auction results)
-2. Reputable auction house results
-3. r/Watchexchange and similar peer-to-peer marketplaces (real sales, self-reported)
-4. Watch market index/tracking services (WatchCharts etc.)
-5. Dealer asking prices
-6. Active listings (Chrono24, eBay) or general Reddit/forum discussion — lowest trust, asking prices or anecdotes, not confirmed sales
+${SOURCE_HIERARCHY}
 
-Never present an asking price as a sold price — label every comp sold vs. active explicitly.
+${NO_FABRICATION_RULES}
 
 Your final message must be ONLY the report below — no "let me search for a few more comps" or "I have enough to analyze now" narration. Search first, then write the complete report in one final message starting with "## Identification".
 
@@ -56,7 +59,8 @@ Fast liquidation value, realistic private-party value, optimistic retail ask. Ne
 Opening offer, strong offer, absolute maximum. Expected net profit and ROI if he buys at each tier.
 
 ## Recommendation
-One of: Steal / Great Buy / Good Buy / Borderline / Pass, with the reasoning. Protect capital first — recommend Pass if the evidence or profit case is unclear, even if the watch is desirable. Confidence score (high/medium-high/medium/low) tied to how much real comp evidence you actually found.
+${ACQUISITION_TIERS}
+State which tier applies, with the reasoning, plus a confidence score (high/medium-high/medium/low) tied to how much real comp evidence you actually found.
 
 ## Key risks
 Only material ones.
@@ -80,6 +84,9 @@ Deno.serve(async (req) => {
 interface AnalyzeRequest {
   description: string;
   images: { media_type: string; data: string }[];
+  brand?: string;
+  model?: string;
+  reference?: string;
 }
 
 async function handleAnalyze(req: Request): Promise<Response> {
@@ -91,12 +98,29 @@ async function handleAnalyze(req: Request): Promise<Response> {
 
     const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY") });
 
+    // Optional — Griffin doesn't always know brand/model/reference up front
+    // (e.g. photos-only submissions), so this is a single conditional lookup,
+    // not a second Claude round-trip.
+    let baselineContext = "";
+    if (body.brand && body.model && body.reference) {
+      const adminClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const normalizedReference = normalizeReference(body.brand, body.model, body.reference);
+      const baseline = await lookupBaseline(adminClient, normalizedReference);
+      baselineContext = formatBaselineContext(baseline);
+    }
+
     const content: Anthropic.MessageParam["content"] = [];
     for (const img of body.images ?? []) {
       content.push({
         type: "image",
         source: { type: "base64", media_type: img.media_type as never, data: img.data },
       });
+    }
+    if (baselineContext) {
+      content.push({ type: "text", text: baselineContext });
     }
     content.push({
       type: "text",
@@ -182,6 +206,14 @@ const PAGE_HTML = `<!doctype html>
     font-size: 15px; font-family: inherit; resize: vertical;
   }
   textarea:focus, #dropzone:focus-within { outline: 2px solid #3b82f6; outline-offset: 1px; }
+  .idrow { display: flex; gap: 10px; margin-bottom: 14px; }
+  .idrow > div { flex: 1; }
+  .idrow input {
+    width: 100%; background: #1a222e; color: #f3f5f8;
+    border: 1px solid #232c3a; border-radius: 10px; padding: 10px 12px;
+    font-size: 14px; font-family: inherit;
+  }
+  .idrow input:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
   #dropzone {
     margin-top: 18px; border: 1.5px dashed #2f3a4a; border-radius: 10px;
     padding: 22px; text-align: center; cursor: pointer; color: #6b7686; font-size: 13px;
@@ -224,8 +256,13 @@ const PAGE_HTML = `<!doctype html>
   </header>
 
   <div class="card">
+    <div class="idrow">
+      <div><label for="brand">Brand</label><input type="text" id="brand" placeholder="Rolex" /></div>
+      <div><label for="model">Model</label><input type="text" id="model" placeholder="Submariner" /></div>
+      <div><label for="reference">Reference</label><input type="text" id="reference" placeholder="116610" /></div>
+    </div>
     <label for="description">Description</label>
-    <textarea id="description" placeholder="Brand, model, reference if known, condition, box/papers, asking price, seller notes..."></textarea>
+    <textarea id="description" placeholder="Condition, box/papers, asking price, seller notes..."></textarea>
 
     <div id="dropzone" tabindex="0">Click or drag photos here (up to 6)</div>
     <input type="file" id="fileInput" accept="image/*" multiple />
@@ -315,6 +352,9 @@ function renderThumbs() {
 
 analyzeBtn.addEventListener('click', async () => {
   const description = document.getElementById('description').value;
+  const brand = document.getElementById('brand').value.trim();
+  const model = document.getElementById('model').value.trim();
+  const reference = document.getElementById('reference').value.trim();
   if (!description.trim() && images.length === 0) {
     errorEl.textContent = 'Add a description or at least one photo.';
     return;
@@ -332,7 +372,10 @@ analyzeBtn.addEventListener('click', async () => {
     const resp = await fetch(window.location.href, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description, images: images.map(({ media_type, data }) => ({ media_type, data })) }),
+      body: JSON.stringify({
+        description, brand, model, reference,
+        images: images.map(({ media_type, data }) => ({ media_type, data })),
+      }),
     });
     const json = await resp.json();
     if (!resp.ok || json.error) throw new Error(json.error || 'Request failed');

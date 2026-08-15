@@ -191,6 +191,29 @@ metadata:
 - `comparable-research.md` — Recent completed sales, sources, pricing evidence
 - `pricing-transactions.md` — If any deals from the report are actioned
 
+**Also emit a structured sidecar** for any reference with a materially updated baseline this week:
+`gf-vault/reports/weekly-market-research-[date].baselines.json` — a JSON array, one object per
+updated reference, shaped as:
+```json
+{
+  "normalized_reference": "brand-model-reference, lowercased/hyphenated (see
+    supabase/functions/_shared/pricing-methodology.ts's normalizeReference — compute it, don't
+    guess; test in a JS/TS scratch snippet if unsure)",
+  "brand": "...", "model": "...", "reference": "...",
+  "typical_ask_low": 0, "typical_ask_high": 0,
+  "realistic_sold_low": 0, "realistic_sold_high": 0,
+  "liquidity_rating": "very slow|slow|average|liquid|very liquid",
+  "negotiation_notes": "...", "service_notes": "...",
+  "source": "weekly_research"
+}
+```
+This commits to the repo alongside the markdown report (no new egress needed — git push already
+works). It's the handoff to `reference_baselines`, the live table `check-price` and `analyze-watch`
+ground their estimates in — Griffin runs `supabase/scripts/sync-baselines.ts` against the latest
+sidecar from his own machine to actually apply it (git commit here, DB write there — same split as
+the project's existing `supabase db push`/`functions deploy` setup steps, since only Griffin's
+machine has an authenticated Supabase session).
+
 **Link in Report:** 
 - Reference relevant [[watch-pricing-knowledge]] entries
 - Cross-link to [[comparable-research]] source documentation
