@@ -16,6 +16,10 @@
 
 - **[Watch Price Checker App](watch-price-app.md)** — Active build; consumer mobile app productizing the pricing genius methodology, lead-gen + freemium/premium
 
+## Personal Tools
+
+- **[Watch Analyzer](watch-analyzer.md)** — Standalone link for Griffin's own buy/pass research; photos+description in, live research + recommendation out
+
 ## Supporting Documents
 
 - **[Marketplace Fees](../docs/marketplace-fees.md)** — eBay, Chrono24, auction house fees; business assumptions
