@@ -6,22 +6,26 @@ and/or a description of a listing you're considering buying; get back an
 identification, live market research, and a buy/pass recommendation using the
 same methodology as [`watch-pricing-genius`](../../agents/watch-pricing-genius.md).
 
-**Live URL:** https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analyze-watch
+**Live URL (page):** https://griffinf25.github.io/GF-Vault-Repo-for-Watch-Research/
+**API (analysis only):** https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analyze-watch
 
-No login, no account — the page and the analysis are served from a single
-Supabase Edge Function deployed with `--no-verify-jwt`, so the link works for
-anyone who has it with zero setup. That also means don't share this link
-publicly — it has no rate limiting or usage cap (unlike the consumer app),
-and every request costs real Anthropic API spend.
+No login, no account — the page is a static file served free via GitHub
+Pages, and it calls the Supabase Edge Function (deployed with
+`--no-verify-jwt`) for the analysis. Split across two hosts because Supabase
+Edge Functions on the free tier force any `text/html` response down to
+`text/plain` (an anti-abuse platform restriction — not fixable from function
+code, confirmed with a throwaway Storage bucket test). That also means don't
+share the link publicly — it has no rate limiting or usage cap (unlike the
+consumer app), and every request costs real Anthropic API spend.
 
 ## How it works
 
-- The function's `GET` response is the page itself (HTML/CSS/JS inlined in
-  `supabase/functions/analyze-watch/index.ts` — no separate frontend build or
-  deploy).
+- The page lives at `docs/index.html` in this repo, served by GitHub Pages
+  (repo Settings → Pages → Deploy from branch → `main` / `/docs`).
 - The page resizes photos client-side (max 1280px, JPEG ~0.82 quality) before
-  base64-encoding them, then `POST`s `{ description, images }` back to the
-  same URL.
+  base64-encoding them, then `POST`s `{ description, brand, model, reference, images }`
+  to the Supabase function URL above (hardcoded in the page's `ANALYZE_URL`
+  constant, since the page and API no longer share an origin).
 - The function calls Claude (`claude-opus-4-8`, adaptive thinking, high
   effort, web search) with a system prompt mirroring the Watch Pricing Genius
   methodology, and returns the final report as markdown, which the page
@@ -53,3 +57,6 @@ npx supabase functions deploy analyze-watch --no-verify-jwt
 The `--no-verify-jwt` flag matters — without it, requests need a valid
 Supabase auth token and the zero-friction "just open the link" property goes
 away.
+
+Changes to the page itself just need `docs/index.html` edited and pushed —
+GitHub Pages redeploys automatically, no CLI step.
