@@ -30,6 +30,12 @@ consumer app), and every request costs real Anthropic API spend.
   effort, web search) with a system prompt mirroring the Watch Pricing Genius
   methodology, and returns the final report as markdown, which the page
   renders with a small inline markdown renderer.
+- When brand/model/reference are filled in, the function looks up
+  `reference_baselines` (shared with `check-price`, see
+  `../watch-price-app/supabase/functions/_shared/pricing-methodology.ts`) and
+  folds any match into the prompt as top-weight evidence before the live
+  search runs — GF Vault's own accumulated pricing data, not just fresh web
+  results.
 - Runs a fresh live web search on every request — no caching, since this
   backs real-time purchase decisions where a stale answer is actively wrong,
   not just imprecise.

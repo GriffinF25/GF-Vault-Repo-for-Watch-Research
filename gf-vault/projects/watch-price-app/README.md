@@ -122,21 +122,10 @@ same web search and structured-output support, higher per-token price.
 
 ## Internal tool: Watch Analyzer (`analyze-watch`)
 
-A second Edge Function, separate from the consumer price-checker above — Griffin's internal
-photo-based purchase-decision tool, implementing `gf-vault/agents/watch-pricing-genius.md`'s
-methodology machine-callably. Send it photos and/or a description (optionally brand/model/
-reference, which grounds it in `reference_baselines` the same way `check-price` does) and it
-returns a full markdown report: identification, market snapshot, comparables, valuation, deal
-math, and a Steal/Great Buy/Good Buy/Borderline/Pass recommendation. Uses `claude-opus-4-8`
-(deeper research, low volume — real purchase decisions, not consumer traffic).
-
-It serves its own page (`GET`) and runs the analysis (`POST`) from the same function, so it's one
-permanent Supabase URL with no separate frontend deploy. Deployed `--no-verify-jwt` — **Griffin-only
-by design, no auth on the endpoint, don't link it publicly:**
-
-```bash
-cd supabase
-npx supabase functions deploy analyze-watch --no-verify-jwt
-```
-
-Find the URL in the Supabase dashboard's Edge Functions list after deploying.
+A second Edge Function lives in this project (`supabase/functions/analyze-watch/`) — Griffin's
+internal photo-based purchase-decision tool, sharing `_shared/pricing-methodology.ts` and
+`reference_baselines` grounding with `check-price` above. It's documented as its own standalone
+project, not a page of this one: see
+[`gf-vault/projects/watch-analyzer/README.md`](../watch-analyzer/README.md) for the live URLs,
+architecture (split across GitHub Pages + this Supabase function since the free tier can't serve
+HTML), and deploy instructions.

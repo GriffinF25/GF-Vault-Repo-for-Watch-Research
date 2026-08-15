@@ -99,7 +99,7 @@ Canonical text lives in code, not here — see
 analysis. It is the single source of truth shared by this agent, the consumer app's `check-price`
 Edge Function, and the internal `analyze-watch` Edge Function — which is this spec's
 machine-callable implementation for photo-based purchase decisions (Opus-based, deployed
-`--no-verify-jwt`, Griffin-only; see `gf-vault/projects/watch-price-app/README.md`).
+`--no-verify-jwt`, Griffin-only; see `gf-vault/projects/watch-analyzer/README.md`).
 
 ## Integration with GF Vault Memory
 
