@@ -15,6 +15,10 @@ metadata:
 
 **Chat redesign (2026-08-15):** Rebuilt from a single-shot form into a real chat thread, per Griffin's request ("more like a chatbot type deal and less of a field based thing") — he chose true multi-turn conversation over a chat-styled-but-still-single-shot option, so he can ask follow-ups ("what if it's missing papers", "fair counter offer") without resubmitting. The function is still stateless: the page keeps the full message history client-side and resends it every turn; the baseline lookup and optional brand/model/reference fields only apply to the opening message.
 
+**Cost optimization (2026-08-15):** Hit an Anthropic "credit balance too low" error testing the chat redesign, prompting a cost pass across both this and [[watch-price-app]]'s backend. Model/effort/search-cap now tier by turn: only the opening message runs Opus at high effort with a 6-search budget (that's the one backing the real buy/pass call, worth the cost); follow-ups drop to Sonnet, medium effort, a 3-search cap, 1536-token ceiling — they're grounded in context already established, so a cheaper model is plenty. Also added ephemeral prompt caching to both functions' system prompts, and to the growing conversation prefix here specifically, since every follow-up was re-billing full price for all prior images/text on top of the new question before this.
+
+**Why:** Multi-turn chat without caching means cost grows with every reply in a thread (each call resends the whole conversation). Tiering + caching keeps a long back-and-forth cheap while keeping the one call that matters most (initial identification) at full quality.
+
 **Live URL (page):** https://griffinf25.github.io/GF-Vault-Repo-for-Watch-Research/ — not rate-limited, don't share publicly.
 **API URL (analysis only, POST):** https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analyze-watch
 

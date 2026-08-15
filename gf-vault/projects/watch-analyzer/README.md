@@ -36,27 +36,28 @@ consumer app), and every request costs real Anthropic API spend.
   `check-price`, see
   `../watch-price-app/supabase/functions/_shared/pricing-methodology.ts`)
   when the incoming history has exactly one message.
-- The function calls Claude (`claude-opus-4-8`, adaptive thinking, high
-  effort, web search) with a system prompt mirroring the Watch Pricing Genius
-  methodology for the opening report, then switches to a shorter
-  conversational instruction for follow-up turns — same live-search grounding,
-  no repeated structured report. Each reply is rendered client-side as a chat
-  bubble with a small inline markdown renderer.
-- Runs a fresh live web search on every message — no caching, since this
-  backs real-time purchase decisions where a stale answer is actively wrong,
-  not just imprecise.
+- The function calls Claude with a system prompt mirroring the Watch Pricing
+  Genius methodology for the opening report, then switches to a shorter
+  conversational instruction for follow-up turns — same live-search
+  grounding, no repeated structured report. Each reply is rendered
+  client-side as a chat bubble with a small inline markdown renderer.
+- Model/effort/search budget are tiered by turn (see `FIRST_TURN_*` /
+  `FOLLOWUP_*` constants in `index.ts`): the opening message runs
+  `claude-opus-4-8` at high effort with up to 6 searches, since that's the
+  one backing the real buy/pass call. Follow-ups drop to `claude-sonnet-5`,
+  medium effort, a 3-search cap, and a smaller output ceiling — they're
+  grounded in context the opening turn already established, so the cheaper
+  model is plenty.
+- Every fresh live search still runs on every message — no *answer* caching,
+  since this backs real-time purchase decisions where a stale answer is
+  actively wrong, not just imprecise. What's cached (via Anthropic's
+  ephemeral `cache_control`) is the static system prompt and the growing
+  conversation prefix — otherwise every follow-up would re-bill full price
+  for all prior images and text on top of the new question, since the
+  function is stateless and resends the whole thread each time.
 
-Expect **30–120 seconds** per message (Opus + high effort + up to 6 search
-rounds) — the composer shows a typing indicator with elapsed time while it
-works.
-
-## Why Opus here but Sonnet in the consumer app
-
-The consumer app runs Sonnet 5 at low effort with a search cap, because it's
-free-tier, high-volume, and a rough price range is the whole product. This
-tool runs at much lower volume and backs real purchase-or-pass calls where
-being wrong costs real money — worth the extra cost and latency for better
-reasoning.
+Expect **30–120 seconds** for the opening message, faster for follow-ups —
+the composer shows a typing indicator with elapsed time while it works.
 
 ## Deploying changes
 
