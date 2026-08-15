@@ -13,6 +13,8 @@ metadata:
 
 **Why split:** Originally one Edge Function served both the page (GET) and analysis (POST). Discovered Supabase Edge Functions (and Storage) force any `text/html` response to `text/plain` on the free tier — a hard anti-abuse platform restriction, confirmed via WebSearch and an independent throwaway-bucket test, not fixable from function code. Chose GitHub Pages (free) over Supabase Pro ($25/mo) to fix it.
 
+**Chat redesign (2026-08-15):** Rebuilt from a single-shot form into a real chat thread, per Griffin's request ("more like a chatbot type deal and less of a field based thing") — he chose true multi-turn conversation over a chat-styled-but-still-single-shot option, so he can ask follow-ups ("what if it's missing papers", "fair counter offer") without resubmitting. The function is still stateless: the page keeps the full message history client-side and resends it every turn; the baseline lookup and optional brand/model/reference fields only apply to the opening message.
+
 **Live URL (page):** https://griffinf25.github.io/GF-Vault-Repo-for-Watch-Research/ — not rate-limited, don't share publicly.
 **API URL (analysis only, POST):** https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analyze-watch
 

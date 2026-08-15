@@ -1,10 +1,13 @@
 # GF Vault Watch Analyzer
 
 A standalone tool for Griffin's own acquisition research — separate from the
-consumer-facing [watch-price-app](../watch-price-app/). Paste watch photos
-and/or a description of a listing you're considering buying; get back an
-identification, live market research, and a buy/pass recommendation using the
-same methodology as [`watch-pricing-genius`](../../agents/watch-pricing-genius.md).
+consumer-facing [watch-price-app](../watch-price-app/). A chat interface:
+send watch photos and/or a description of a listing you're considering
+buying, get back an identification, live market research, and a buy/pass
+recommendation using the same methodology as
+[`watch-pricing-genius`](../../agents/watch-pricing-genius.md) — then keep
+asking follow-ups ("what if it's missing papers", "fair counter offer") in
+the same thread.
 
 **Live URL (page):** https://griffinf25.github.io/GF-Vault-Repo-for-Watch-Research/
 **API (analysis only):** https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analyze-watch
@@ -22,26 +25,30 @@ consumer app), and every request costs real Anthropic API spend.
 
 - The page lives at `docs/index.html` in this repo, served by GitHub Pages
   (repo Settings → Pages → Deploy from branch → `main` / `/docs`).
-- The page resizes photos client-side (max 1280px, JPEG ~0.82 quality) before
-  base64-encoding them, then `POST`s `{ description, brand, model, reference, images }`
-  to the Supabase function URL above (hardcoded in the page's `ANALYZE_URL`
-  constant, since the page and API no longer share an origin).
+- The page keeps the whole conversation client-side (`history`, an array of
+  `{ role, text, images? }`) and resends the full thread on every message —
+  the function itself is stateless, no conversation table. Photos are resized
+  client-side (max 1280px, JPEG ~0.82 quality) and base64-encoded before
+  attaching to whichever message they were dropped on.
+- The optional brand/model/reference fields only apply to the opening
+  message — they hide from the composer after the first send, and the
+  function only runs the baseline lookup (`reference_baselines`, shared with
+  `check-price`, see
+  `../watch-price-app/supabase/functions/_shared/pricing-methodology.ts`)
+  when the incoming history has exactly one message.
 - The function calls Claude (`claude-opus-4-8`, adaptive thinking, high
   effort, web search) with a system prompt mirroring the Watch Pricing Genius
-  methodology, and returns the final report as markdown, which the page
-  renders with a small inline markdown renderer.
-- When brand/model/reference are filled in, the function looks up
-  `reference_baselines` (shared with `check-price`, see
-  `../watch-price-app/supabase/functions/_shared/pricing-methodology.ts`) and
-  folds any match into the prompt as top-weight evidence before the live
-  search runs — GF Vault's own accumulated pricing data, not just fresh web
-  results.
-- Runs a fresh live web search on every request — no caching, since this
+  methodology for the opening report, then switches to a shorter
+  conversational instruction for follow-up turns — same live-search grounding,
+  no repeated structured report. Each reply is rendered client-side as a chat
+  bubble with a small inline markdown renderer.
+- Runs a fresh live web search on every message — no caching, since this
   backs real-time purchase decisions where a stale answer is actively wrong,
   not just imprecise.
 
-Expect **60–120 seconds** per analysis (Opus + high effort + up to 6 search
-rounds) — the page shows an elapsed-time indicator while it works.
+Expect **30–120 seconds** per message (Opus + high effort + up to 6 search
+rounds) — the composer shows a typing indicator with elapsed time while it
+works.
 
 ## Why Opus here but Sonnet in the consumer app
 
