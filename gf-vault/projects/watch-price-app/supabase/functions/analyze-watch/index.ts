@@ -8,8 +8,10 @@
 // This mirrors gf-vault/agents/watch-pricing-genius.md's methodology:
 // identify from photos/description, research real market comps via live web
 // search, and give Griffin a buy/pass-style recommendation — not a consumer
-// price estimate. Uses Opus (not the cheaper Sonnet the consumer app uses)
-// because this backs real purchase decisions and runs at much lower volume.
+// price estimate. The opening message of each conversation runs on Opus at
+// high effort (this backs real purchase decisions, worth the cost); follow-up
+// questions run cheaper on Sonnet since they're grounded in context that's
+// already established. See FIRST_TURN_*/FOLLOWUP_* constants below.
 
 import Anthropic from "npm:@anthropic-ai/sdk@^0.71.0";
 import { createClient } from "npm:@supabase/supabase-js@^2.45.0";
@@ -22,9 +24,16 @@ import {
   formatBaselineContext,
 } from "../_shared/pricing-methodology.ts";
 
-const MODEL = "claude-opus-4-8";
-const MAX_OUTPUT_TOKENS = 4096;
-const MAX_SEARCH_USES = 6;
+// Only the opening message (full identification + report) needs Opus at high
+// effort with a generous search budget — follow-ups are grounded in context
+// that's already established, so they run cheaper: Sonnet, less thinking
+// effort, a smaller search cap, and a shorter output ceiling.
+const FIRST_TURN_MODEL = "claude-opus-4-8";
+const FIRST_TURN_MAX_OUTPUT_TOKENS = 4096;
+const FIRST_TURN_MAX_SEARCH_USES = 6;
+const FOLLOWUP_MODEL = "claude-sonnet-5";
+const FOLLOWUP_MAX_OUTPUT_TOKENS = 1536;
+const FOLLOWUP_MAX_SEARCH_USES = 3;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -137,7 +146,7 @@ async function handleAnalyze(req: Request): Promise<Response> {
 
     let messages: Anthropic.MessageParam[] = body.messages.map((m, i) => {
       if (m.role === "assistant") {
-        return { role: "assistant", content: m.text };
+        return { role: "assistant", content: [{ type: "text", text: m.text }] };
       }
       const content: Anthropic.MessageParam["content"] = [];
       for (const img of m.images ?? []) {
@@ -156,25 +165,45 @@ async function handleAnalyze(req: Request): Promise<Response> {
       return { role: "user", content };
     });
 
+    // Cache everything through the end of the prior turn. Each new message
+    // resends the whole conversation (this function is stateless), so
+    // without this every follow-up would re-bill the full image + prior-turn
+    // token cost at full price on top of the new question.
+    if (messages.length > 1) {
+      const priorTurn = messages[messages.length - 2];
+      const blocks = priorTurn.content as Anthropic.ContentBlockParam[];
+      if (blocks.length > 0) {
+        blocks[blocks.length - 1] = { ...blocks[blocks.length - 1], cache_control: { type: "ephemeral" } };
+      }
+    }
+
+    const model = isFirstTurn ? FIRST_TURN_MODEL : FOLLOWUP_MODEL;
+    const effort: "high" | "medium" = isFirstTurn ? "high" : "medium";
+    const maxTokens = isFirstTurn ? FIRST_TURN_MAX_OUTPUT_TOKENS : FOLLOWUP_MAX_OUTPUT_TOKENS;
+    const maxSearchUses = isFirstTurn ? FIRST_TURN_MAX_SEARCH_USES : FOLLOWUP_MAX_SEARCH_USES;
+    const system: Anthropic.MessageCreateParams["system"] = [
+      { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+    ];
+
     let response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_OUTPUT_TOKENS,
+      model,
+      max_tokens: maxTokens,
       thinking: { type: "adaptive" },
-      output_config: { effort: "high" },
-      system: SYSTEM_PROMPT,
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCH_USES }],
+      output_config: { effort },
+      system,
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: maxSearchUses }],
       messages,
     });
 
     while (response.stop_reason === "pause_turn") {
       messages = [...messages, { role: "assistant", content: response.content }];
       response = await anthropic.messages.create({
-        model: MODEL,
-        max_tokens: MAX_OUTPUT_TOKENS,
+        model,
+        max_tokens: maxTokens,
         thinking: { type: "adaptive" },
-        output_config: { effort: "high" },
-        system: SYSTEM_PROMPT,
-        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCH_USES }],
+        output_config: { effort },
+        system,
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: maxSearchUses }],
         messages,
       });
     }

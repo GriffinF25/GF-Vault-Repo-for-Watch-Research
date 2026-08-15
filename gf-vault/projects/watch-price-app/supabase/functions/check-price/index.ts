@@ -286,13 +286,20 @@ async function fetchEstimateFromClaude(req: CheckPriceRequest, baseline: Referen
     .filter(Boolean)
     .join("\n");
 
+  // System prompt is static and identical on every call — caching it means
+  // back-to-back lookups (common when Griffin researches several references
+  // in one sitting) only pay full price for it once per cache window.
+  const system: Anthropic.MessageCreateParams["system"] = [
+    { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+  ];
+
   let messages: Anthropic.MessageParam[] = [{ role: "user", content: userQuery }];
   let response = await anthropic.messages.create({
     model: MODEL,
     max_tokens: MAX_OUTPUT_TOKENS,
     thinking: { type: "adaptive" },
     output_config: { effort: "low", format: { type: "json_schema", schema: RESULT_SCHEMA } },
-    system: SYSTEM_PROMPT,
+    system,
     tools: [{ type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCH_USES }],
     messages,
   });
@@ -306,7 +313,7 @@ async function fetchEstimateFromClaude(req: CheckPriceRequest, baseline: Referen
       max_tokens: MAX_OUTPUT_TOKENS,
       thinking: { type: "adaptive" },
       output_config: { effort: "low", format: { type: "json_schema", schema: RESULT_SCHEMA } },
-      system: SYSTEM_PROMPT,
+      system,
       tools: [{ type: "web_search_20260209", name: "web_search", max_uses: MAX_SEARCH_USES }],
       messages,
     });
