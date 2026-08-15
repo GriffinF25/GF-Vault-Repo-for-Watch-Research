@@ -7,100 +7,136 @@
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 0;
+  html, body {
+    margin: 0; padding: 0; height: 100%;
     background: #0a0e14; color: #f3f5f8;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
-  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
-  header { margin-bottom: 28px; }
+  body { display: flex; flex-direction: column; }
+
+  header {
+    flex: 0 0 auto; padding: 16px 20px; border-bottom: 1px solid #1c2430;
+    display: flex; align-items: center; gap: 10px;
+  }
   .badge {
-    display: inline-block; background: #1a222e; border: 1px solid #2f3a4a;
-    border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 800;
-    letter-spacing: 1.5px; color: #3b82f6; margin-bottom: 14px;
+    background: #1a222e; border: 1px solid #2f3a4a; border-radius: 20px;
+    padding: 4px 11px; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #3b82f6;
   }
-  h1 { font-size: 26px; font-weight: 800; margin: 0 0 6px; }
-  .sub { color: #a9b3c1; font-size: 14px; line-height: 1.5; margin: 0; }
-  .card {
-    background: #131922; border: 1px solid #232c3a; border-radius: 16px;
-    padding: 20px; margin-top: 22px;
+  header h1 { font-size: 15px; font-weight: 700; margin: 0; color: #d7dce3; }
+
+  #thread {
+    flex: 1 1 auto; overflow-y: auto; padding: 20px; max-width: 760px; width: 100%;
+    margin: 0 auto; display: flex; flex-direction: column; gap: 16px;
   }
-  label { display: block; font-size: 13px; font-weight: 600; color: #a9b3c1; margin-bottom: 6px; }
-  textarea {
-    width: 100%; min-height: 110px; background: #1a222e; color: #f3f5f8;
-    border: 1px solid #232c3a; border-radius: 10px; padding: 12px 14px;
-    font-size: 15px; font-family: inherit; resize: vertical;
+  .empty {
+    color: #6b7686; font-size: 14px; line-height: 1.6; margin: auto; text-align: center; max-width: 380px;
   }
-  textarea:focus, #dropzone:focus-within { outline: 2px solid #3b82f6; outline-offset: 1px; }
-  .idrow { display: flex; gap: 10px; margin-bottom: 14px; }
-  .idrow > div { flex: 1; }
-  .idrow input {
-    width: 100%; background: #1a222e; color: #f3f5f8;
-    border: 1px solid #232c3a; border-radius: 10px; padding: 10px 12px;
-    font-size: 14px; font-family: inherit;
+  .empty strong { color: #a9b3c1; }
+
+  .msg { display: flex; }
+  .msg.user { justify-content: flex-end; }
+  .msg.assistant { justify-content: flex-start; }
+  .bubble {
+    max-width: 88%; border-radius: 14px; padding: 12px 15px; font-size: 15px; line-height: 1.55;
   }
-  .idrow input:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
-  #dropzone {
-    margin-top: 18px; border: 1.5px dashed #2f3a4a; border-radius: 10px;
-    padding: 22px; text-align: center; cursor: pointer; color: #6b7686; font-size: 13px;
+  .msg.user .bubble { background: #3b82f6; color: #0a0e14; border-bottom-right-radius: 4px; }
+  .msg.assistant .bubble { background: #131922; border: 1px solid #232c3a; border-bottom-left-radius: 4px; }
+  .bubble p { margin: 8px 0; }
+  .bubble p:first-child { margin-top: 0; }
+  .bubble p:last-child { margin-bottom: 0; }
+  .msg.user .bubble p { color: #0a0e14; }
+  .bubble h2 { font-size: 15px; font-weight: 800; margin: 16px 0 6px; }
+  .bubble h2:first-child { margin-top: 0; }
+  .bubble table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12.5px; }
+  .bubble th, .bubble td { text-align: left; padding: 5px 7px; border-bottom: 1px solid #232c3a; }
+  .bubble th { color: #a9b3c1; font-weight: 600; }
+  .bubble ul { padding-left: 18px; margin: 6px 0; }
+  .bubble strong { color: inherit; }
+  .msg-images { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .msg-images img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+
+  .typing .bubble { display: flex; align-items: center; gap: 5px; padding: 14px 16px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #6b7686; animation: pulse 1.2s infinite ease-in-out; }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 0%, 60%, 100% { opacity: 0.3; } 30% { opacity: 1; } }
+  #elapsed { font-size: 12px; color: #6b7686; margin-left: 4px; }
+
+  #error { color: #f87171; font-size: 13px; padding: 0 20px; max-width: 760px; width: 100%; margin: 0 auto; }
+
+  #composer-wrap { flex: 0 0 auto; border-top: 1px solid #1c2430; padding: 14px 20px 18px; }
+  #identrow {
+    max-width: 760px; margin: 0 auto 10px; display: flex; gap: 8px;
   }
-  #dropzone.drag { border-color: #3b82f6; color: #3b82f6; }
-  #fileInput { display: none; }
-  #thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-  .thumb { position: relative; width: 76px; height: 76px; border-radius: 8px; overflow: hidden; border: 1px solid #232c3a; }
+  #identrow input {
+    flex: 1; background: #131922; color: #f3f5f8; border: 1px solid #232c3a;
+    border-radius: 9px; padding: 8px 11px; font-size: 13px; font-family: inherit; min-width: 0;
+  }
+  #identrow input:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
+  #identrow.hidden { display: none; }
+
+  #composer {
+    max-width: 760px; margin: 0 auto; background: #131922; border: 1px solid #232c3a;
+    border-radius: 16px; padding: 8px 8px 8px 14px; display: flex; flex-direction: column; gap: 8px;
+  }
+  #composer.drag { border-color: #3b82f6; }
+  #thumbs { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+  .thumb { position: relative; width: 52px; height: 52px; border-radius: 8px; overflow: hidden; border: 1px solid #232c3a; }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .thumb button {
-    position: absolute; top: 2px; right: 2px; background: rgba(10,14,20,0.85);
-    color: #f3f5f8; border: none; border-radius: 4px; width: 18px; height: 18px;
-    font-size: 11px; cursor: pointer; line-height: 1;
+    position: absolute; top: 1px; right: 1px; background: rgba(10,14,20,0.85);
+    color: #f3f5f8; border: none; border-radius: 4px; width: 16px; height: 16px;
+    font-size: 10px; cursor: pointer; line-height: 1; padding: 0;
   }
-  button#analyzeBtn {
-    margin-top: 20px; width: 100%; background: #3b82f6; color: #0a0e14;
-    border: none; border-radius: 10px; padding: 15px; font-size: 16px; font-weight: 700;
-    cursor: pointer;
+  #inputrow { display: flex; align-items: flex-end; gap: 6px; }
+  #composerText {
+    flex: 1; background: transparent; color: #f3f5f8; border: none; resize: none;
+    font-size: 15px; font-family: inherit; line-height: 1.4; max-height: 160px; padding: 8px 0;
   }
-  button#analyzeBtn:disabled { opacity: 0.6; cursor: default; }
-  #status { margin-top: 14px; font-size: 13px; color: #6b7686; text-align: center; min-height: 18px; }
-  #result { margin-top: 22px; line-height: 1.6; font-size: 15px; }
-  #result h2 { font-size: 17px; font-weight: 800; margin: 24px 0 8px; color: #f3f5f8; }
-  #result h2:first-child { margin-top: 0; }
-  #result table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-  #result th, #result td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #232c3a; }
-  #result th { color: #a9b3c1; font-weight: 600; }
-  #result strong { color: #f3f5f8; }
-  #result ul { padding-left: 20px; }
-  #result p { color: #d7dce3; margin: 8px 0; }
-  #error { color: #f87171; margin-top: 14px; font-size: 14px; }
+  #composerText:focus { outline: none; }
+  .iconbtn {
+    flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; border: none;
+    background: transparent; color: #a9b3c1; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .iconbtn:hover { background: #1a222e; }
+  #sendBtn { background: #3b82f6; color: #0a0e14; font-weight: 700; }
+  #sendBtn:disabled { opacity: 0.4; cursor: default; background: #2a3444; color: #6b7686; }
+  #fileInput { display: none; }
+  #hint { text-align: center; font-size: 11px; color: #4d5866; margin-top: 8px; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="badge">GF VAULT</div>
-    <h1>Watch Analyzer</h1>
-    <p class="sub">Photos + description in, live market research and a buy/pass call out. Runs a fresh web search every time.</p>
-  </header>
+<header>
+  <div class="badge">GF VAULT</div>
+  <h1>Watch Analyzer — live research chat</h1>
+</header>
 
-  <div class="card">
-    <div class="idrow">
-      <div><label for="brand">Brand</label><input type="text" id="brand" placeholder="Rolex" /></div>
-      <div><label for="model">Model</label><input type="text" id="model" placeholder="Submariner" /></div>
-      <div><label for="reference">Reference</label><input type="text" id="reference" placeholder="116610" /></div>
-    </div>
-    <label for="description">Description</label>
-    <textarea id="description" placeholder="Condition, box/papers, asking price, seller notes..."></textarea>
-
-    <div id="dropzone" tabindex="0">Click or drag photos here (up to 6)</div>
-    <input type="file" id="fileInput" accept="image/*" multiple />
-    <div id="thumbs"></div>
-
-    <button id="analyzeBtn">Analyze</button>
-    <div id="status"></div>
-    <div id="error"></div>
+<div id="thread">
+  <div class="empty" id="emptyState">
+    <strong>Send photos and/or a description of a watch you're considering.</strong><br/><br/>
+    Optionally fill in brand/model/reference below to pull GF Vault's own baseline data first. I'll run a fresh live web search every time — never cached, never from memory — then you can ask follow-ups.
   </div>
-
-  <div id="result"></div>
 </div>
+<div id="error"></div>
+
+<div id="composer-wrap">
+  <div id="identrow">
+    <input type="text" id="brand" placeholder="Brand (optional)" />
+    <input type="text" id="model" placeholder="Model (optional)" />
+    <input type="text" id="reference" placeholder="Reference (optional)" />
+  </div>
+  <div id="composer">
+    <div id="thumbs"></div>
+    <div id="inputrow">
+      <button type="button" class="iconbtn" id="attachBtn" title="Attach photos" aria-label="Attach photos">📎</button>
+      <textarea id="composerText" rows="1" placeholder="Describe the watch, or ask a follow-up..."></textarea>
+      <button type="button" class="iconbtn" id="sendBtn" title="Send" aria-label="Send">➤</button>
+    </div>
+  </div>
+  <div id="hint">Runs live web search every message — expect 30–120s for a reply.</div>
+</div>
+<input type="file" id="fileInput" accept="image/*" multiple />
 
 <script>
 // Static page hosted on GitHub Pages — the analysis itself runs on Supabase
@@ -110,35 +146,53 @@ const ANALYZE_URL = 'https://ndjgvmvfgtiuchwlpqed.supabase.co/functions/v1/analy
 
 const MAX_IMAGES = 6;
 const MAX_DIMENSION = 1280;
-let images = []; // { media_type, data, previewUrl }
+let pendingImages = []; // { media_type, data, previewUrl } — attached but not yet sent
+let history = []; // { role, text, images? } — full conversation, sent each request
+let sending = false;
 
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('fileInput');
-const thumbs = document.getElementById('thumbs');
-const statusEl = document.getElementById('status');
+const thread = document.getElementById('thread');
+const emptyState = document.getElementById('emptyState');
 const errorEl = document.getElementById('error');
-const resultEl = document.getElementById('result');
-const analyzeBtn = document.getElementById('analyzeBtn');
+const identrow = document.getElementById('identrow');
+const brandInput = document.getElementById('brand');
+const modelInput = document.getElementById('model');
+const referenceInput = document.getElementById('reference');
+const composer = document.getElementById('composer');
+const thumbs = document.getElementById('thumbs');
+const composerText = document.getElementById('composerText');
+const attachBtn = document.getElementById('attachBtn');
+const sendBtn = document.getElementById('sendBtn');
+const fileInput = document.getElementById('fileInput');
 
-dropzone.addEventListener('click', () => fileInput.click());
-dropzone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
-dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
-dropzone.addEventListener('drop', (e) => {
+attachBtn.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+composer.addEventListener('dragover', (e) => { e.preventDefault(); composer.classList.add('drag'); });
+composer.addEventListener('dragleave', () => composer.classList.remove('drag'));
+composer.addEventListener('drop', (e) => {
   e.preventDefault();
-  dropzone.classList.remove('drag');
+  composer.classList.remove('drag');
   handleFiles(e.dataTransfer.files);
 });
-fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+composerText.addEventListener('input', () => {
+  composerText.style.height = 'auto';
+  composerText.style.height = Math.min(composerText.scrollHeight, 160) + 'px';
+});
+composerText.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
+sendBtn.addEventListener('click', send);
 
 async function handleFiles(fileList) {
   for (const file of Array.from(fileList)) {
-    if (images.length >= MAX_IMAGES) break;
+    if (pendingImages.length >= MAX_IMAGES) break;
     if (!file.type.startsWith('image/')) continue;
-    const resized = await resizeImage(file);
-    images.push(resized);
+    pendingImages.push(await resizeImage(file));
   }
   renderThumbs();
+  fileInput.value = '';
 }
 
 function resizeImage(file) {
@@ -169,56 +223,113 @@ function resizeImage(file) {
 
 function renderThumbs() {
   thumbs.innerHTML = '';
-  images.forEach((img, i) => {
+  pendingImages.forEach((img, i) => {
     const div = document.createElement('div');
     div.className = 'thumb';
     div.innerHTML = '<img src="' + img.previewUrl + '" /><button type="button" aria-label="Remove">✕</button>';
     div.querySelector('button').addEventListener('click', () => {
-      images.splice(i, 1);
+      pendingImages.splice(i, 1);
       renderThumbs();
     });
     thumbs.appendChild(div);
   });
 }
 
-analyzeBtn.addEventListener('click', async () => {
-  const description = document.getElementById('description').value;
-  const brand = document.getElementById('brand').value.trim();
-  const model = document.getElementById('model').value.trim();
-  const reference = document.getElementById('reference').value.trim();
-  if (!description.trim() && images.length === 0) {
-    errorEl.textContent = 'Add a description or at least one photo.';
-    return;
+function addBubble(role, text, images) {
+  emptyState.style.display = 'none';
+  const msg = document.createElement('div');
+  msg.className = 'msg ' + role;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (images && images.length) {
+    const imgRow = document.createElement('div');
+    imgRow.className = 'msg-images';
+    images.forEach((img) => {
+      const el = document.createElement('img');
+      el.src = img.previewUrl || ('data:' + img.media_type + ';base64,' + img.data);
+      imgRow.appendChild(el);
+    });
+    bubble.appendChild(imgRow);
   }
+  const textDiv = document.createElement('div');
+  textDiv.innerHTML = role === 'assistant' ? renderMarkdown(text) : escText(text);
+  bubble.appendChild(textDiv);
+  msg.appendChild(bubble);
+  thread.appendChild(msg);
+  thread.scrollTop = thread.scrollHeight;
+  return bubble;
+}
+
+function escText(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML.replace(/\n/g, '<br/>');
+}
+
+function addTypingBubble() {
+  const msg = document.createElement('div');
+  msg.className = 'msg assistant typing';
+  msg.innerHTML = '<div class="bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span id="elapsed"></span></div>';
+  thread.appendChild(msg);
+  thread.scrollTop = thread.scrollHeight;
+  return msg;
+}
+
+async function send() {
+  if (sending) return;
+  const text = composerText.value.trim();
+  const images = pendingImages;
+  if (!text && images.length === 0) return;
+
   errorEl.textContent = '';
-  resultEl.innerHTML = '';
-  analyzeBtn.disabled = true;
+  const isFirstTurn = history.length === 0;
+  const brand = brandInput.value.trim();
+  const model = modelInput.value.trim();
+  const reference = referenceInput.value.trim();
+
+  addBubble('user', text, images);
+  history.push({ role: 'user', text, images: images.map(({ media_type, data }) => ({ media_type, data })) });
+
+  composerText.value = '';
+  composerText.style.height = 'auto';
+  pendingImages = [];
+  renderThumbs();
+  if (isFirstTurn) identrow.classList.add('hidden');
+
+  sending = true;
+  sendBtn.disabled = true;
+  const typingMsg = addTypingBubble();
   const start = Date.now();
+  const elapsedEl = typingMsg.querySelector('#elapsed');
   const timer = setInterval(() => {
-    statusEl.textContent = 'Researching live market data... (' + Math.round((Date.now() - start) / 1000) + 's)';
+    elapsedEl.textContent = Math.round((Date.now() - start) / 1000) + 's';
   }, 1000);
-  statusEl.textContent = 'Researching live market data...';
 
   try {
+    const payload = { messages: history };
+    if (isFirstTurn && brand && model && reference) {
+      payload.brand = brand; payload.model = model; payload.reference = reference;
+    }
     const resp = await fetch(ANALYZE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        description, brand, model, reference,
-        images: images.map(({ media_type, data }) => ({ media_type, data })),
-      }),
+      body: JSON.stringify(payload),
     });
     const json = await resp.json();
     if (!resp.ok || json.error) throw new Error(json.error || 'Request failed');
-    resultEl.innerHTML = renderMarkdown(json.markdown);
+    typingMsg.remove();
+    addBubble('assistant', json.markdown);
+    history.push({ role: 'assistant', text: json.markdown });
   } catch (err) {
+    typingMsg.remove();
     errorEl.textContent = 'Something went wrong: ' + err.message;
+    history.pop(); // roll back the user turn so a retry doesn't duplicate it
   } finally {
     clearInterval(timer);
-    statusEl.textContent = '';
-    analyzeBtn.disabled = false;
+    sending = false;
+    sendBtn.disabled = false;
   }
-});
+}
 
 // Minimal markdown renderer — headers, bold, tables, bullet lists, paragraphs.
 function renderMarkdown(md) {

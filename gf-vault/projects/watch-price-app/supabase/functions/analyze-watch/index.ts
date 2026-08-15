@@ -43,7 +43,9 @@ ${NO_FABRICATION_RULES}
 
 Your final message must be ONLY the report below — no "let me search for a few more comps" or "I have enough to analyze now" narration. Search first, then write the complete report in one final message starting with "## Identification".
 
-Respond in this structure (markdown, skip sections that genuinely don't apply rather than padding them out):
+This is a running conversation — Griffin may ask follow-up questions after the first report ("what if it's missing papers", "what's a fair counter offer", "check if there's a cheaper one on Chrono24 right now"). For follow-ups, don't repeat the full structured report — answer conversationally, running a fresh live search only if the question needs new/current data, and stay grounded in the identification and comps already established earlier in the conversation unless Griffin gives you a different watch.
+
+For the first message in a conversation, respond in this structure (markdown, skip sections that genuinely don't apply rather than padding them out):
 
 ## Identification
 Exact reference, variation, size, movement, dial/bezel/bracelet, production era. Confidence in the ID and what supports it. Flag anything in the photos that looks off (mismatched parts, wrong engravings, suspicious finishing) — never confirm authenticity from photos alone, only flag red flags.
@@ -83,9 +85,19 @@ Deno.serve(async (req) => {
   });
 });
 
+interface ChatImage {
+  media_type: string;
+  data: string;
+}
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  text: string;
+  images?: ChatImage[];
+}
+
 interface AnalyzeRequest {
-  description: string;
-  images: { media_type: string; data: string }[];
+  messages: ChatMessage[];
   brand?: string;
   model?: string;
   reference?: string;
@@ -94,17 +106,26 @@ interface AnalyzeRequest {
 async function handleAnalyze(req: Request): Promise<Response> {
   try {
     const body = (await req.json()) as AnalyzeRequest;
-    if (!body.description?.trim() && (!body.images || body.images.length === 0)) {
+    if (!Array.isArray(body.messages) || body.messages.length === 0) {
+      return jsonResponse({ error: "Provide at least one message." }, 400);
+    }
+    const lastMessage = body.messages[body.messages.length - 1];
+    if (lastMessage.role !== "user") {
+      return jsonResponse({ error: "The last message must be from the user." }, 400);
+    }
+    if (!lastMessage.text?.trim() && (!lastMessage.images || lastMessage.images.length === 0)) {
       return jsonResponse({ error: "Provide at least a description or a photo." }, 400);
     }
 
     const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY") });
 
     // Optional — Griffin doesn't always know brand/model/reference up front
-    // (e.g. photos-only submissions), so this is a single conditional lookup,
-    // not a second Claude round-trip.
+    // (e.g. photos-only submissions). Only relevant to the opening message of
+    // a conversation, so this is a single conditional lookup on the first
+    // turn, not a repeated round-trip on every follow-up.
     let baselineContext = "";
-    if (body.brand && body.model && body.reference) {
+    const isFirstTurn = body.messages.length === 1;
+    if (isFirstTurn && body.brand && body.model && body.reference) {
       const adminClient = createClient(
         Deno.env.get("SUPABASE_URL")!,
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -114,22 +135,27 @@ async function handleAnalyze(req: Request): Promise<Response> {
       baselineContext = formatBaselineContext(baseline);
     }
 
-    const content: Anthropic.MessageParam["content"] = [];
-    for (const img of body.images ?? []) {
+    let messages: Anthropic.MessageParam[] = body.messages.map((m, i) => {
+      if (m.role === "assistant") {
+        return { role: "assistant", content: m.text };
+      }
+      const content: Anthropic.MessageParam["content"] = [];
+      for (const img of m.images ?? []) {
+        content.push({
+          type: "image",
+          source: { type: "base64", media_type: img.media_type as never, data: img.data },
+        });
+      }
+      if (i === body.messages.length - 1 && baselineContext) {
+        content.push({ type: "text", text: baselineContext });
+      }
       content.push({
-        type: "image",
-        source: { type: "base64", media_type: img.media_type as never, data: img.data },
+        type: "text",
+        text: m.text?.trim() || "No description provided — identify and analyze from the photos alone.",
       });
-    }
-    if (baselineContext) {
-      content.push({ type: "text", text: baselineContext });
-    }
-    content.push({
-      type: "text",
-      text: body.description?.trim() || "No description provided — identify and analyze from the photos alone.",
+      return { role: "user", content };
     });
 
-    let messages: Anthropic.MessageParam[] = [{ role: "user", content }];
     let response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
