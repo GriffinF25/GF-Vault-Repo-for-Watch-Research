@@ -30,10 +30,19 @@ import {
 // effort, a smaller search cap, and a shorter output ceiling.
 const FIRST_TURN_MODEL = "claude-opus-4-8";
 const FIRST_TURN_MAX_OUTPUT_TOKENS = 4096;
-const FIRST_TURN_MAX_SEARCH_USES = 6;
+const FIRST_TURN_MAX_SEARCH_USES = 4;
 const FOLLOWUP_MODEL = "claude-sonnet-5";
 const FOLLOWUP_MAX_OUTPUT_TOKENS = 1536;
 const FOLLOWUP_MAX_SEARCH_USES = 3;
+
+// Supabase Edge Functions on the free tier hard-kill the invocation at 150s
+// wall-clock with no chance for our own catch block to run — the caller just
+// gets a bare platform error, not our JSON shape. A detailed first message
+// (long description, several photos) can legitimately need more than one
+// pause_turn round-trip, and those add up, so we self-impose a deadline well
+// under the platform's and bail out with whatever we have rather than
+// risking a silent kill.
+const DEADLINE_MS = 125_000;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -185,6 +194,7 @@ async function handleAnalyze(req: Request): Promise<Response> {
       { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
     ];
 
+    const startedAt = Date.now();
     let response = await anthropic.messages.create({
       model,
       max_tokens: maxTokens,
@@ -195,7 +205,12 @@ async function handleAnalyze(req: Request): Promise<Response> {
       messages,
     });
 
+    let hitDeadline = false;
     while (response.stop_reason === "pause_turn") {
+      if (Date.now() - startedAt > DEADLINE_MS) {
+        hitDeadline = true;
+        break;
+      }
       messages = [...messages, { role: "assistant", content: response.content }];
       response = await anthropic.messages.create({
         model,
@@ -213,7 +228,12 @@ async function handleAnalyze(req: Request): Promise<Response> {
     // complete, self-contained report. Concatenating all of them (the old
     // behavior) leaked that narration into the top of the final report.
     const textBlocks = response.content.filter((b): b is Anthropic.TextBlock => b.type === "text");
-    const text = textBlocks.length > 0 ? textBlocks[textBlocks.length - 1].text : "";
+    let text = textBlocks.length > 0 ? textBlocks[textBlocks.length - 1].text : "";
+
+    if (hitDeadline) {
+      text +=
+        "\n\n---\n_Hit the time budget with research still in progress — the above may be incomplete. Ask a follow-up to fill in a specific gap, or resend with fewer photos/a shorter description for a faster first pass._";
+    }
 
     return jsonResponse({ markdown: text });
   } catch (err) {

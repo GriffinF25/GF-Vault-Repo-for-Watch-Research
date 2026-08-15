@@ -315,8 +315,15 @@ async function send() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const json = await resp.json();
-    if (!resp.ok || json.error) throw new Error(json.error || 'Request failed');
+    const raw = await resp.text();
+    let json;
+    try { json = JSON.parse(raw); } catch { json = null; }
+    if (!resp.ok || !json || json.error) {
+      const detail = json && json.error ? json.error
+        : raw ? (raw.length > 200 ? raw.slice(0, 200) + '…' : raw)
+        : 'no response body';
+      throw new Error('HTTP ' + resp.status + ' — ' + detail);
+    }
     typingMsg.remove();
     addBubble('assistant', json.markdown);
     history.push({ role: 'assistant', text: json.markdown });
