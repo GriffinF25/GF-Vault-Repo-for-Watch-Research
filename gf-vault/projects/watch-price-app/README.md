@@ -97,10 +97,10 @@ Xcode / Android Studio installed.
 
 ## Cost note
 
-This defaults to `claude-opus-4-8` for the price-search calls (see
-`supabase/functions/check-price/index.ts`). If per-lookup API cost matters more than
-maximum research quality for your margins, `claude-sonnet-5` is a meaningfully cheaper
-swap-in — same web search and structured-output support, lower per-token price.
+This defaults to `claude-sonnet-5` for the price-search calls (see
+`supabase/functions/check-price/index.ts`). If maximum research quality matters more than
+per-lookup API cost for your margins, `claude-opus-4-8` is a swap-in with deeper research —
+same web search and structured-output support, higher per-token price.
 
 ## Architecture recap
 

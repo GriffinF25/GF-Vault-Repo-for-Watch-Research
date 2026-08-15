@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 1f391c44-6fe4-41e6-9f8b-5d8578bf2215
+  modified: 2026-08-15T14:22:16.536Z
 ---
 
 # Learnings Recap System
@@ -92,4 +93,8 @@ Every 3 months:
 - Win: the agent refused to fabricate verified comps from snippets and emailed an honest no-data report — the no-fabrication doctrine held under pressure.
 - Checklist for any new cloud routine: repo pushed & readable → egress open → GitHub write → connector attached → expect drafts.
 
-**Status:** Active | Review: Monthly | Next: Verify weekly run after Griffin enables egress + GitHub write
+**2026-08-15 — Egress block still unresolved, now a month+ old**
+- The 2026-07-14 egress finding never got fixed at the environment level. As of tonight: GF Vault Watch Price App Nightly Health Check has failed its live backend smoke test for 20 consecutive nights (2026-07-27–2026-08-15), and GF Vault Weekly Watch Market Research has produced zero verified comps for 5 consecutive weeks (2026-07-15–2026-08-10) — both blocked by the same cause, `env_015Pccf4nef4zKBaeYGNpf3p`'s outbound proxy rejecting CONNECT to everything except Anthropic-hosted WebSearch.
+- Confirmed via `RemoteTrigger`: routine `job_config` has no network/egress field — only `environment_id`, `session_context`, `mcp_connections`. The allowlist is an environment-level setting with no API exposed to routines or to this session; only fixable by Griffin in the claude.ai Code environment UI (Environments, linked from https://claude.ai/code/routines). Until that changes, both routines will keep reporting the same blocker on every run — don't re-diagnose it, just point back here.
+
+**Status:** Active | Review: Monthly | Next: Griffin opens the environment's egress allowlist for `*.supabase.co` + watch research sources; both blocked routines self-recover once that's done
