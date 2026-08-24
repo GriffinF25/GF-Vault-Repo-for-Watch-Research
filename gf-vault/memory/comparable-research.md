@@ -268,6 +268,20 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
   remains the routine's top blocker and requires the environment/session egress policy to be opened
   for external research sites (eBay, Chrono24, Reddit, WatchUSeek).
 
+### 2026-08-24 — Weekly research blocked again, seventh consecutive week
+- Same blanket egress denial as the prior six weeks: `curl` returned 403/`CONNECT tunnel failed` and
+  `WebFetch` returned explicit `EGRESS_BLOCKED` errors on eBay, Chrono24, Reddit, WatchUSeek, and a
+  Wikipedia control site. The proxy status endpoint's `recentRelayFailures` log confirms the gateway
+  explicitly answered 403 to each CONNECT (policy denial). `WebSearch` worked, returning
+  aggregator/asking-price snippets (WatchCharts, Chrono24 asking listings, ECI Jewelers) which per
+  the no-fabrication rule was excluded from comps.
+- No baselines or comparables updated this week either — see
+  `gf-vault/reports/weekly-market-research-2026-08-24.md` for full detail.
+- **Escalation:** seven consecutive scheduled runs (07-15, 07-20, 07-27, 08-03, 08-10, 08-17, 08-24)
+  — seven weeks straight — have produced zero verified data. Existing baselines are now 6+ weeks
+  stale. This remains the routine's top blocker and requires the environment/session egress policy to
+  be opened for external research sites (eBay, Chrono24, Reddit, WatchUSeek).
+
 ---
 
 ## Source Quality Notes
