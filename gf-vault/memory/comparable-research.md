@@ -299,6 +299,24 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
   requires the environment/session egress policy to be opened for external research sites (eBay,
   Chrono24, Reddit, WatchUSeek).
 
+### 2026-09-14 — Weekly research blocked again, ninth confirmed blocked run
+- Same blanket egress denial as the prior eight blocked weeks: `curl` returned 403/`CONNECT tunnel
+  failed` and `WebFetch` returned explicit `EGRESS_BLOCKED` errors on eBay, Chrono24, Reddit,
+  WatchUSeek, and a Wikipedia control site. `WebSearch` worked, returning aggregator/asking-price
+  snippets (WatchCharts, Chrono24 reference pages, eBay browse pages, AuctionMapper) which per the
+  no-fabrication rule was excluded from comps.
+- No baselines or comparables updated this week either — see
+  `gf-vault/reports/weekly-market-research-2026-09-14.md` for full detail.
+- **Corroboration:** this repo's separate nightly health check independently hit the identical
+  `connect_rejected` block against `*.supabase.co` for 50 consecutive nights as of 2026-09-14,
+  confirming this is a workspace/session-level egress policy issue affecting multiple unrelated
+  scheduled agents, not something specific to watch-research sources.
+- **Escalation:** nine confirmed scheduled runs (07-15, 07-20, 07-27, 08-03, 08-10, 08-17, 08-24,
+  09-07, 09-14) have produced zero verified data, plus one additional week (08-31) with no run
+  recorded at all. Existing baselines are now roughly 9 weeks stale. This remains the routine's top
+  blocker and requires the environment/session egress policy to be opened for external research
+  sites (eBay, Chrono24, Reddit, WatchUSeek).
+
 ---
 
 ## Source Quality Notes
