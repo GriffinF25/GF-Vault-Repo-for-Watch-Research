@@ -299,6 +299,24 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
   requires the environment/session egress policy to be opened for external research sites (eBay,
   Chrono24, Reddit, WatchUSeek).
 
+### 2026-09-21 — Weekly research blocked again, tenth confirmed blocked run
+- Same blanket egress denial as the prior nine blocked weeks: `curl` returned 403/`CONNECT tunnel
+  failed` on www.ebay.com, www.chrono24.com, www.reddit.com, watchcharts.com, www.google.com, and
+  en.wikipedia.org (control site). The agent proxy status endpoint's `recentRelayFailures` log
+  confirms `connect_rejected` ("gateway answered 403 to CONNECT (policy denial or upstream
+  failure)") for every host tested. No baselines or comparables updated this week — see
+  `gf-vault/reports/weekly-market-research-2026-09-21.md` for full detail.
+- **New this week:** the Gmail MCP server available to this session exposes only one tool,
+  `delete_draft` — no `send`/`create_draft`/compose tool is present, so the weekly summary email
+  (or even a fallback draft) could not be produced this run. This is a second, independent
+  capability gap on top of the egress block; flagged to Griffin in this week's report.
+- **Escalation:** ten confirmed scheduled runs (07-15, 07-20, 07-27, 08-03, 08-10, 08-17, 08-24,
+  09-07, 09-14, 09-21) have produced zero verified data, plus one additional week (08-31) with no
+  run recorded at all. Existing baselines are now roughly 10 weeks stale. This remains the
+  routine's top blocker and requires the environment/session egress policy to be opened for
+  external research sites (eBay, Chrono24, Reddit, WatchUSeek), plus restoration of Gmail
+  send/draft-create access for this routine.
+
 ### 2026-09-14 — Weekly research blocked again, ninth confirmed blocked run
 - Same blanket egress denial as the prior eight blocked weeks: `curl` returned 403/`CONNECT tunnel
   failed` and `WebFetch` returned explicit `EGRESS_BLOCKED` errors on eBay, Chrono24, Reddit,
