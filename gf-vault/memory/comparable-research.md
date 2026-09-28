@@ -299,6 +299,26 @@ See [[marketplace-fees]] for most current fees. Cache your research here if veri
   requires the environment/session egress policy to be opened for external research sites (eBay,
   Chrono24, Reddit, WatchUSeek).
 
+### 2026-09-28 — Weekly research blocked again, eleventh confirmed blocked run
+- Same blanket egress denial as the prior ten blocked weeks: `curl` returned 403/`CONNECT tunnel
+  failed` (HTTP status `000`) on www.ebay.com, www.chrono24.com, www.reddit.com, and
+  en.wikipedia.org (control site). The agent proxy status endpoint's `recentRelayFailures` log
+  confirms `connect_rejected` ("gateway answered 403 to CONNECT (policy denial or upstream
+  failure)") for every host tested. `WebSearch` was tested and returned only aggregator/asking
+  snippets (WatchCharts, AuctionMapper, BobsWatches, eBay browse pages) with no verifiable
+  individual sold listing — excluded from comps per the no-fabrication rule. No baselines or
+  comparables updated this week — see `gf-vault/reports/weekly-market-research-2026-09-28.md` for
+  full detail.
+- **Gmail still unavailable:** the Gmail MCP server available to this session again exposes only
+  `delete_draft` — no `send`/`create_draft`/compose tool — so the weekly summary email (or even a
+  fallback draft) could not be produced this run, unchanged from last week.
+- **Escalation:** eleven confirmed scheduled runs (07-15, 07-20, 07-27, 08-03, 08-10, 08-17, 08-24,
+  09-07, 09-14, 09-21, 09-28) have produced zero verified data, plus one additional week (08-31)
+  with no run recorded at all. Existing baselines are now roughly 11 weeks stale. This remains the
+  routine's top blocker and requires the environment/session egress policy to be opened for
+  external research sites (eBay, Chrono24, Reddit, WatchUSeek), plus restoration of Gmail
+  send/draft-create access for this routine.
+
 ### 2026-09-21 — Weekly research blocked again, tenth confirmed blocked run
 - Same blanket egress denial as the prior nine blocked weeks: `curl` returned 403/`CONNECT tunnel
   failed` on www.ebay.com, www.chrono24.com, www.reddit.com, watchcharts.com, www.google.com, and
